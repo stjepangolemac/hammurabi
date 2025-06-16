@@ -23,7 +23,28 @@ This implementation features:
 
 ## 🚀 Installation
 
+### Download Pre-built Binary (Recommended)
+
+Download the latest release for your platform from the [releases page](https://github.com/stjepangolemac/hammurabi/releases/latest):
+
+- **Windows**: `hammurabi-Windows-x86_64.zip`
+- **macOS (Intel)**: `hammurabi-Darwin-x86_64.tar.gz`
+- **macOS (Apple Silicon)**: `hammurabi-Darwin-aarch64.tar.gz`
+- **Linux**: `hammurabi-Linux-x86_64.tar.gz`
+
+Extract and run:
+```bash
+# macOS/Linux
+tar -xzf hammurabi-*.tar.gz
+./hammurabi
+
+# Windows
+# Extract the zip file and run hammurabi.exe
+```
+
 ### From crates.io
+
+If you have Rust installed:
 
 ```bash
 cargo install hammurabi
@@ -35,15 +56,6 @@ cargo install hammurabi
 git clone https://github.com/stjepangolemac/hammurabi.git
 cd hammurabi
 cargo install --path .
-```
-
-### Development build
-
-```bash
-git clone https://github.com/stjepangolemac/hammurabi.git
-cd hammurabi
-cargo build --release
-./target/release/hammurabi
 ```
 
 ## 🎮 How to Play
