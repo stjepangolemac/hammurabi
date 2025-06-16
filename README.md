@@ -27,10 +27,10 @@ This implementation features:
 
 Download the latest release for your platform from the [releases page](https://github.com/stjepangolemac/hammurabi/releases/latest):
 
-- **Windows**: `hammurabi-Windows-x86_64.zip`
-- **macOS (Intel)**: `hammurabi-Darwin-x86_64.tar.gz`
-- **macOS (Apple Silicon)**: `hammurabi-Darwin-aarch64.tar.gz`
-- **Linux**: `hammurabi-Linux-x86_64.tar.gz`
+- **Windows**: `hammurabi-windows-amd64.zip`
+- **macOS (Intel)**: `hammurabi-macos-amd64.tar.gz`
+- **macOS (Apple Silicon)**: `hammurabi-macos-aarch64.tar.gz`
+- **Linux**: `hammurabi-linux-amd64.tar.gz`
 
 Extract and run:
 ```bash
