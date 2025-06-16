@@ -257,10 +257,17 @@ fn render_input_section<'a>(
 }
 
 fn draw_instructions(frame: &mut Frame, area: Rect) {
-    // Split area into sections with more padding
+    // Use responsive padding based on terminal size
+    let padding = if frame.area().width >= 80 && frame.area().height >= 24 {
+        1
+    } else {
+        0
+    };
+    
+    // Split area into sections with responsive padding
     let chunks = Layout::default()
         .direction(Direction::Vertical)
-        .margin(4)
+        .margin(padding)
         .constraints([
             Constraint::Length(3),  // Title
             Constraint::Length(16), // Instructions
@@ -319,10 +326,17 @@ fn draw_instructions(frame: &mut Frame, area: Rect) {
 }
 
 fn draw_splash(frame: &mut Frame, area: Rect) {
+    // Use responsive padding based on terminal size
+    let padding = if frame.area().width >= 80 && frame.area().height >= 24 {
+        1
+    } else {
+        0
+    };
+    
     // Create layout for the content
     let chunks = Layout::default()
         .direction(Direction::Vertical)
-        .margin(2)
+        .margin(padding)
         .constraints([
             Constraint::Length(1), // Top decoration
             Constraint::Length(3), // Top text
