@@ -74,6 +74,13 @@ fn run_app<B: ratatui::backend::Backend>(
                             app.should_quit = true;
                         }
                     }
+                    KeyCode::Char('c') => {
+                        if key.modifiers.contains(KeyModifiers::CONTROL) {
+                            app.should_quit = true;
+                        } else {
+                            app.handle_input('c');
+                        }
+                    }
                     KeyCode::Enter => {
                         app.handle_enter()?;
                     }

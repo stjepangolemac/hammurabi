@@ -78,6 +78,15 @@ impl GameState {
         self.year += 1;
         self.land_price = self.rng.gen_range(17..=26);
         self.current_phase = GamePhase::LandTransaction;
+        
+        // Reset per-year tracking variables
+        self.harvest_yield = 0;
+        self.grain_eaten_by_rats = 0;
+        self.new_citizens = 0;
+        self.deaths_starvation = 0;
+        self.deaths_plague = 0;
+        self.grain_harvested = 0;
+        self.acres_planted = 0;
     }
 
     pub fn can_afford_land(&self, acres: u32) -> bool {

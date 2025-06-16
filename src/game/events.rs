@@ -51,8 +51,8 @@ impl GameState {
         EventOutcome {
             event: RandomEvent::Harvest,
             description: format!(
-                "YOU HARVESTED {} BUSHELS PER ACRE",
-                self.harvest_yield
+                "YOU HARVESTED {} BUSHELS PER ACRE, TOTAL: {} BUSHELS",
+                self.harvest_yield, self.grain_harvested
             ),
             impact: self.grain_harvested as i32,
         }
