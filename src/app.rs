@@ -1,4 +1,5 @@
 use crate::game::{GameState, GamePhase, GameAction, ActionResult, evaluate_performance};
+use crate::messages::MessageTemplates;
 use anyhow::Result;
 use std::time::Instant;
 
@@ -9,6 +10,7 @@ pub struct App {
     pub event_messages: Vec<String>,
     pub should_quit: bool,
     pub splash_start: Option<Instant>,
+    pub messages: MessageTemplates,
 }
 
 impl App {
@@ -20,6 +22,7 @@ impl App {
             event_messages: Vec::new(),
             should_quit: false,
             splash_start: Some(Instant::now()),
+            messages: MessageTemplates::new(seed),
         }
     }
 
@@ -100,10 +103,10 @@ impl App {
                     self.message.clear();
                 }
                 ActionResult::InsufficientGrain => {
-                    self.message = "Thy coffers lack the grain for such purchase!".to_string();
+                    self.message = self.messages.insufficient_grain_land_message();
                 }
                 ActionResult::InsufficientLand => {
-                    self.message = "Thou dost not possess such vast estates!".to_string();
+                    self.message = self.messages.insufficient_land_message();
                 }
                 _ => {}
             }
@@ -121,13 +124,13 @@ impl App {
                     self.message.clear();
                 }
                 ActionResult::InsufficientGrain => {
-                    self.message = "Thy granaries hold not enough seed!".to_string();
+                    self.message = self.messages.insufficient_grain_seed_message();
                 }
                 ActionResult::InsufficientLand => {
-                    self.message = "Thy kingdom encompasses not such acreage!".to_string();
+                    self.message = self.messages.insufficient_land_planting_message();
                 }
                 ActionResult::InsufficientPopulation => {
-                    self.message = "Too few subjects remain to till such fields!".to_string();
+                    self.message = self.messages.insufficient_workers_message();
                 }
                 _ => {}
             }
@@ -143,7 +146,7 @@ impl App {
                     self.message.clear();
                 }
                 ActionResult::InsufficientGrain => {
-                    self.message = "Thy stores contain not such abundance!".to_string();
+                    self.message = self.messages.insufficient_grain_feeding_message();
                 }
                 _ => {}
             }
@@ -152,12 +155,12 @@ impl App {
 
     fn process_year_end(&mut self) {
         // Process random events
-        let outcomes = self.game.process_year_events();
+        let outcomes = self.game.process_year_events(&mut self.messages);
         self.event_messages.clear();
         
         // Add starvation report first if any
         if self.game.deaths_starvation > 0 {
-            self.event_messages.push(format!("{} OF THY SUBJECTS STARVED TO DEATH", self.game.deaths_starvation));
+            self.event_messages.push(self.messages.starvation_message(self.game.deaths_starvation));
         }
         
         for outcome in outcomes {

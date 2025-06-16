@@ -328,8 +328,8 @@ fn draw_splash(frame: &mut Frame, area: Rect) {
         .split(area);
 
     // Top decoration
-    let decoration_line = "═".repeat(area.width as usize);
-    let decoration_paragraph = Paragraph::new(decoration_line.clone())
+    let decoration_line = "═══════════════════════════════════════════════════════════════";
+    let decoration_paragraph = Paragraph::new(decoration_line)
         .style(Style::default().fg(Color::DarkGray))
         .alignment(Alignment::Center);
     decoration_paragraph.render(chunks[0], frame.buffer_mut());
@@ -343,8 +343,8 @@ fn draw_splash(frame: &mut Frame, area: Rect) {
         .wrap(ratatui::widgets::Wrap { trim: true });
     top_paragraph.render(chunks[1], frame.buffer_mut());
 
-    // Middle decoration - create a pattern that fills the width
-    let wave_pattern = "~ ".repeat((area.width as usize) / 2);
+    // Middle decoration
+    let wave_pattern = "~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~";
     let mid_decoration_paragraph = Paragraph::new(wave_pattern)
         .style(Style::default().fg(Color::DarkGray))
         .alignment(Alignment::Center);
