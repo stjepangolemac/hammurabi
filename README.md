@@ -51,7 +51,7 @@ cargo install hammurabi
 ### From source
 
 ```bash
-git clone https://github.com/yourusername/hammurabi.git
+git clone https://github.com/stjepangolemac/hammurabi.git
 cd hammurabi
 cargo install --path .
 ```
@@ -59,7 +59,7 @@ cargo install --path .
 ### Development build
 
 ```bash
-git clone https://github.com/yourusername/hammurabi.git
+git clone https://github.com/stjepangolemac/hammurabi.git
 cd hammurabi
 cargo build --release
 ./target/release/hammurabi
@@ -127,7 +127,7 @@ Achieve greatness and be remembered alongside history's finest leaders!
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/hammurabi.git
+git clone https://github.com/stjepangolemac/hammurabi.git
 cd hammurabi
 
 # Build in release mode
