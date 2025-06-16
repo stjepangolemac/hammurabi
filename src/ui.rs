@@ -69,13 +69,14 @@ pub fn draw(frame: &mut Frame, app: &App) {
 
     // Status bar
     content.push(Line::from(vec![
-        Span::raw("BUSHELS:"),
+        Span::raw("BUSHELS: "),
         Span::styled(format!("{}", app.game.grain), Style::default().fg(Color::Yellow)),
-        Span::raw(" ACRES:"),
+        Span::raw("  ACRES: "),
         Span::styled(format!("{}", app.game.land), Style::default().fg(Color::Green)),
-        Span::raw(" PEOPLE:"),
+        Span::raw("  PEOPLE: "),
         Span::styled(format!("{}", app.game.population), Style::default().fg(Color::Cyan)),
-        Span::raw(format!("                    YEAR:{}", app.game.year)),
+        Span::raw("  YEAR: "),
+        Span::styled(format!("{}", app.game.year), Style::default().fg(Color::White)),
     ]));
     content.push(Line::from(""));
 
@@ -256,8 +257,7 @@ fn draw_instructions(frame: &mut Frame, area: Rect) {
         instruction_chunks[0],
         "I.",
         vec![
-            "HOW MUCH LAND TO BUY OR SELL (LAND COSTS BETWEEN",
-            "17 AND 26 BUSHELS OF GRAIN).",
+            "HOW MUCH LAND TO BUY OR SELL (LAND COSTS BETWEEN 17 AND 26 BUSHELS OF GRAIN).",
         ],
     );
     
@@ -266,8 +266,7 @@ fn draw_instructions(frame: &mut Frame, area: Rect) {
         instruction_chunks[2],
         "II.",
         vec![
-            "HOW MANY BUSHELS TO FEED YOUR PEOPLE (20 PER",
-            "PERSON PER YEAR REQUIRED).",
+            "HOW MANY BUSHELS TO FEED YOUR PEOPLE (20 PER PERSON PER YEAR REQUIRED).",
         ],
     );
     
@@ -276,8 +275,7 @@ fn draw_instructions(frame: &mut Frame, area: Rect) {
         instruction_chunks[4],
         "III.",
         vec![
-            "HOW MANY ACRES OF LAND TO PLANT SEED IN",
-            "(REQUIRES 1 BUSHEL + 1/10TH A PERSON TO TILL PER YEAR).",
+            "HOW MANY ACRES OF LAND TO PLANT SEED IN (REQUIRES 1 BUSHEL + 1/10TH A PERSON TO TILL PER YEAR).",
         ],
     );
     
@@ -318,23 +316,39 @@ fn draw_splash(frame: &mut Frame, area: Rect) {
         .direction(Direction::Vertical)
         .margin(1)
         .constraints([
-            Constraint::Length(4),   // Top text
-            Constraint::Length(2),   // Spacer
+            Constraint::Length(1),   // Top decoration
+            Constraint::Length(3),   // Top text
+            Constraint::Length(1),   // Decoration
             Constraint::Length(8),   // Big title
-            Constraint::Length(3),   // Subtitle
+            Constraint::Length(4),   // Subtitle
+            Constraint::Length(1),   // Bottom decoration
             Constraint::Min(0),      // Spacer
             Constraint::Length(3),   // Instructions
         ])
         .split(area);
 
+    // Top decoration
+    let decoration_line = "═".repeat(area.width as usize);
+    let decoration_paragraph = Paragraph::new(decoration_line.clone())
+        .style(Style::default().fg(Color::DarkGray))
+        .alignment(Alignment::Center);
+    decoration_paragraph.render(chunks[0], frame.buffer_mut());
+
     // Top descriptive text
-    let top_text = "IN THIS GAME YOU CAN DIRECT THE ADMINISTRATOR OF THE ANCIENT CITY OF SUMERIA, HAMMURABI. HOW LONG CAN YOU MANAGE YOUR CITY, BECAUSE YOU ARE...";
+    let top_text = "ASSUME THE THRONE OF ANCIENT BABYLON\nRULE WITH WISDOM AND JUSTICE AS THE MIGHTY...";
     
     let top_paragraph = Paragraph::new(top_text)
         .style(Style::default().fg(Color::White))
         .alignment(Alignment::Center)
         .wrap(ratatui::widgets::Wrap { trim: true });
-    top_paragraph.render(chunks[0], frame.buffer_mut());
+    top_paragraph.render(chunks[1], frame.buffer_mut());
+
+    // Middle decoration - create a pattern that fills the width
+    let wave_pattern = "~ ".repeat((area.width as usize) / 2);
+    let mid_decoration_paragraph = Paragraph::new(wave_pattern)
+        .style(Style::default().fg(Color::DarkGray))
+        .alignment(Alignment::Center);
+    mid_decoration_paragraph.render(chunks[2], frame.buffer_mut());
 
     // Create the big text widget
     let big_text = BigText::builder()
@@ -344,37 +358,49 @@ fn draw_splash(frame: &mut Frame, area: Rect) {
         .centered()
         .build();
 
-    big_text.render(chunks[2], frame.buffer_mut());
+    big_text.render(chunks[3], frame.buffer_mut());
 
-    // Add subtitle
+    // Add subtitle with decorations
     let subtitle_lines = vec![
         Line::from(vec![
+            Span::styled("♦ ", Style::default().fg(Color::Yellow)),
             Span::styled("KING OF", Style::default().fg(Color::Magenta).add_modifier(Modifier::BOLD)),
+            Span::styled(" ♦", Style::default().fg(Color::Yellow)),
         ]),
         Line::from(vec![
             Span::styled("ANCIENT BABYLONIA", Style::default().fg(Color::Magenta).add_modifier(Modifier::BOLD)),
+        ]),
+        Line::from(""),
+        Line::from(vec![
+            Span::styled("Guide thy kingdom through ten years of tribulation", Style::default().fg(Color::DarkGray).add_modifier(Modifier::ITALIC)),
         ]),
     ];
     
     let subtitle = Paragraph::new(subtitle_lines)
         .alignment(Alignment::Center);
-    subtitle.render(chunks[3], frame.buffer_mut());
+    subtitle.render(chunks[4], frame.buffer_mut());
+
+    // Bottom decoration
+    let bottom_decoration_paragraph = Paragraph::new(decoration_line)
+        .style(Style::default().fg(Color::DarkGray))
+        .alignment(Alignment::Center);
+    bottom_decoration_paragraph.render(chunks[5], frame.buffer_mut());
     
     // Instructions at bottom
     let instructions = vec![
         Line::from(vec![
             Span::raw("PRESS "),
-            Span::styled("<ENTER>", Style::default().fg(Color::Yellow)),
-            Span::raw(" TO BEGIN THE GAME"),
+            Span::styled("<ENTER>", Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD)),
+            Span::raw(" TO ASCEND THE THRONE"),
         ]),
         Line::from(vec![
             Span::raw("PRESS "),
-            Span::styled("<ESC>", Style::default().fg(Color::Yellow)),
-            Span::raw(" TO QUIT"),
+            Span::styled("<ESC>", Style::default().fg(Color::Red).add_modifier(Modifier::BOLD)),
+            Span::raw(" TO FLEE THY DESTINY"),
         ]),
     ];
     
     let instructions_paragraph = Paragraph::new(instructions)
         .alignment(Alignment::Center);
-    instructions_paragraph.render(chunks[5], frame.buffer_mut());
+    instructions_paragraph.render(chunks[7], frame.buffer_mut());
 }
