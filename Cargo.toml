@@ -2,6 +2,13 @@
 name = "hammurabi"
 version = "0.1.0"
 edition = "2021"
+authors = ["Your Name <your.email@example.com>"]
+description = "A modern terminal-based recreation of the classic 1968 Hammurabi game"
+readme = "README.md"
+repository = "https://github.com/yourusername/hammurabi"
+license = "MIT"
+keywords = ["game", "terminal", "tui", "strategy", "retro"]
+categories = ["games", "command-line-utilities"]
 
 [dependencies]
 ratatui = "0.28"
