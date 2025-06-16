@@ -333,6 +333,13 @@ fn draw_splash(frame: &mut Frame, area: Rect) {
         0
     };
     
+    // Determine title height based on terminal size
+    let title_height = if frame.area().width < 80 || frame.area().height < 24 {
+        4  // Quadrant size needs less height
+    } else {
+        8  // Full size needs more height
+    };
+    
     // Create layout for the content
     let chunks = Layout::default()
         .direction(Direction::Vertical)
@@ -340,8 +347,8 @@ fn draw_splash(frame: &mut Frame, area: Rect) {
         .constraints([
             Constraint::Length(1), // Top decoration
             Constraint::Length(3), // Top text
-            Constraint::Length(8), // Big title
-            Constraint::Length(3), // Subtitle (reduced from 4)
+            Constraint::Length(title_height), // Big title
+            Constraint::Length(3), // Subtitle
             Constraint::Length(1), // Bottom decoration
             Constraint::Min(0),    // Spacer
             Constraint::Length(3), // Instructions
