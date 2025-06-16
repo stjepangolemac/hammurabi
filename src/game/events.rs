@@ -51,8 +51,8 @@ impl GameState {
         EventOutcome {
             event: RandomEvent::Harvest,
             description: format!(
-                "Harvest yielded {} bushels per acre. Total: {} bushels",
-                self.harvest_yield, self.grain_harvested
+                "YOU HARVESTED {} BUSHELS PER ACRE",
+                self.harvest_yield
             ),
             impact: self.grain_harvested as i32,
         }
@@ -66,8 +66,8 @@ impl GameState {
         EventOutcome {
             event: RandomEvent::Rats,
             description: format!(
-                "Rats ate {}% of your grain stores! Lost {} bushels",
-                damage_percent, self.grain_eaten_by_rats
+                "RATS ATE {} BUSHELS",
+                self.grain_eaten_by_rats
             ),
             impact: -(self.grain_eaten_by_rats as i32),
         }
@@ -81,7 +81,7 @@ impl GameState {
 
         EventOutcome {
             event: RandomEvent::Plague,
-            description: format!("A horrible plague struck! {} people died", deaths),
+            description: format!("A HORRIBLE PLAGUE STRUCK! HALF THE PEOPLE DIED"),
             impact: -(deaths as i32),
         }
     }
@@ -91,7 +91,7 @@ impl GameState {
             self.new_citizens = 0;
             return EventOutcome {
                 event: RandomEvent::Immigration,
-                description: "No one wants to immigrate to a starving city".to_string(),
+                description: "NO ONE CAME TO THE CITY".to_string(),
                 impact: 0,
             };
         }
@@ -102,7 +102,7 @@ impl GameState {
 
         EventOutcome {
             event: RandomEvent::Immigration,
-            description: format!("{} people came to the city", self.new_citizens),
+            description: format!("{} CAME TO THE CITY", self.new_citizens),
             impact: self.new_citizens as i32,
         }
     }

@@ -2,7 +2,6 @@ mod app;
 mod event;
 mod game;
 mod ui;
-mod widgets;
 
 use anyhow::Result;
 use clap::Parser;

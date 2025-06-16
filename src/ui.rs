@@ -1,99 +1,175 @@
 use ratatui::{
-    layout::{Constraint, Direction, Layout, Rect},
-    style::{Color, Style},
+    layout::{Alignment, Constraint, Direction, Layout},
+    style::{Color, Modifier, Style},
     text::{Line, Span},
-    widgets::{Block, Borders, Paragraph, Widget},
+    widgets::{Paragraph, Widget},
     Frame,
 };
 use crate::app::App;
-use crate::widgets::{render_status, render_input, render_history};
+use crate::game::GamePhase;
 
 pub fn draw(frame: &mut Frame, app: &App) {
-    let chunks = Layout::default()
+    // Single column layout with spacing
+    let area = Layout::default()
         .direction(Direction::Vertical)
-        .margin(1)
-        .constraints([
-            Constraint::Length(5),     // Status
-            Constraint::Length(8),     // Input
-            Constraint::Min(5),        // History
-            Constraint::Length(3),     // Help
-        ])
-        .split(frame.area());
+        .margin(2)
+        .constraints([Constraint::Min(0)])
+        .split(frame.area())[0];
 
-    // Render status
-    render_status(&app.game, chunks[0], frame.buffer_mut());
+    let mut content = Vec::new();
 
-    // Render input area
-    render_input(&app.game, &app.input_buffer, chunks[1], frame.buffer_mut());
+    // Title and year
+    content.push(Line::from(vec![
+        Span::styled(
+            format!("HAMURABI: I BEG TO REPORT TO YOU, IN YEAR {}", app.game.year),
+            Style::default().fg(Color::White).add_modifier(Modifier::BOLD),
+        ),
+    ]));
+    content.push(Line::from(""));
 
-    // Render history
-    render_history(&app.game, &app.event_messages, chunks[2], frame.buffer_mut());
+    // Status bar
+    content.push(Line::from(vec![
+        Span::raw("BUSHELS:"),
+        Span::styled(format!("{}", app.game.grain), Style::default().fg(Color::Yellow)),
+        Span::raw(" ACRES:"),
+        Span::styled(format!("{}", app.game.land), Style::default().fg(Color::Green)),
+        Span::raw(" PEOPLE:"),
+        Span::styled(format!("{}", app.game.population), Style::default().fg(Color::Cyan)),
+        Span::raw(format!("                    YEAR:{}", app.game.year)),
+    ]));
+    content.push(Line::from(""));
 
-    // Render help
-    render_help(chunks[3], frame.buffer_mut());
+    // Event messages or game content
+    if matches!(app.game.current_phase, GamePhase::YearEnd | GamePhase::GameOver) {
+        // Show events
+        for msg in &app.event_messages {
+            let color = if msg.contains("died") || msg.contains("starved") || msg.contains("plague") {
+                Color::Red
+            } else if msg.contains("came to") || msg.contains("Harvest") {
+                Color::Green
+            } else if msg.contains("Rats") {
+                Color::Magenta
+            } else {
+                Color::White
+            };
 
-    // Render message if any
-    if !app.message.is_empty() {
-        render_message(&app.message, frame.area(), frame.buffer_mut());
+            content.push(Line::from(vec![
+                Span::raw("  "),
+                Span::styled(msg.clone(), Style::default().fg(color)),
+            ]));
+        }
+        content.push(Line::from(""));
     }
+
+    // Input section
+    render_input_section(&app.game, &app.input_buffer, &mut content);
+
+    // Error message
+    if !app.message.is_empty() {
+        content.push(Line::from(""));
+        content.push(Line::from(vec![
+            Span::styled(
+                format!("! {}", app.message),
+                Style::default().fg(Color::Red).add_modifier(Modifier::BOLD),
+            ),
+        ]));
+    }
+
+    let paragraph = Paragraph::new(content)
+        .style(Style::default().fg(Color::White))
+        .alignment(Alignment::Left);
+
+    paragraph.render(area, frame.buffer_mut());
 }
 
-fn render_help(area: Rect, buf: &mut ratatui::buffer::Buffer) {
-    let help_text = vec![
-        Line::from(vec![
-            Span::raw("Enter: "),
-            Span::styled("Confirm", Style::default().fg(Color::Green)),
-            Span::raw("  "),
-            Span::raw("Backspace: "),
-            Span::styled("Delete", Style::default().fg(Color::Yellow)),
-            Span::raw("  "),
-            Span::raw("Esc: "),
-            Span::styled("Quit", Style::default().fg(Color::Red)),
-        ]),
-    ];
-
-    let help = Paragraph::new(help_text)
-        .block(
-            Block::default()
-                .borders(Borders::ALL)
-                .title(" Help ")
-                .style(Style::default().fg(Color::DarkGray)),
-        );
-
-    help.render(area, buf);
-}
-
-fn render_message(message: &str, area: Rect, buf: &mut ratatui::buffer::Buffer) {
-    let popup_area = centered_rect(50, 20, area);
+fn render_input_section<'a>(game: &crate::game::GameState, input_buffer: &'a str, content: &mut Vec<Line<'a>>) {
+    use crate::game::GamePhase;
     
-    let message_widget = Paragraph::new(message)
-        .block(
-            Block::default()
-                .borders(Borders::ALL)
-                .title(" Error ")
-                .style(Style::default().fg(Color::Red)),
-        )
-        .style(Style::default().fg(Color::White));
+    match game.current_phase {
+        GamePhase::LandTransaction => {
+            let max_buy = if game.land_price > 0 { game.grain / game.land_price } else { 0 };
+            content.push(Line::from(""));
+            content.push(Line::from(vec![
+                Span::raw("LAND IS TRADING AT "),
+                Span::styled(
+                    format!("{}", game.land_price),
+                    Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD),
+                ),
+                Span::raw(" BUSHELS PER ACRE."),
+            ]));
+            content.push(Line::from(""));
+            content.push(Line::from("HOW MANY ACRES DO YOU WISH TO BUY?"));
+            content.push(Line::from(vec![
+                Span::styled(
+                    format!("(NEGATIVE TO SELL, MAX BUY: {}, YOU OWN: {})", max_buy, game.land),
+                    Style::default().fg(Color::DarkGray),
+                ),
+            ]));
+        }
+        GamePhase::Planting => {
+            let max_plant = game.max_plantable_acres();
+            let max_by_pop = game.population * 10;
+            let max_by_grain = game.grain;
+            let max_by_land = game.land;
+            
+            content.push(Line::from(""));
+            content.push(Line::from("HOW MANY ACRES DO YOU WISH TO PLANT WITH SEED?"));
+            content.push(Line::from(vec![
+                Span::styled(
+                    format!("(MAX: {} - LIMITED BY ", max_plant),
+                    Style::default().fg(Color::DarkGray),
+                ),
+                Span::styled(
+                    if max_plant == max_by_pop { "WORKERS" }
+                    else if max_plant == max_by_grain { "GRAIN" }
+                    else { "LAND" },
+                    Style::default().fg(Color::Yellow),
+                ),
+                Span::styled(")", Style::default().fg(Color::DarkGray)),
+            ]));
+        }
+        GamePhase::Feeding => {
+            let need = game.grain_needed_for_feeding();
+            content.push(Line::from(""));
+            content.push(Line::from(vec![
+                Span::raw("HOW MANY BUSHELS DO YOU WISH TO FEED YOUR PEOPLE?"),
+            ]));
+            content.push(Line::from(vec![
+                Span::styled(
+                    format!("(NEED: {} FOR ALL, HAVE: {})", need, game.grain),
+                    Style::default().fg(Color::DarkGray),
+                ),
+            ]));
+        }
+        GamePhase::YearEnd => {
+            content.push(Line::from(""));
+            content.push(Line::from(vec![
+                Span::styled(
+                    "PRESS ENTER TO CONTINUE...",
+                    Style::default().fg(Color::DarkGray).add_modifier(Modifier::ITALIC),
+                ),
+            ]));
+        }
+        GamePhase::GameOver => {
+            content.push(Line::from(""));
+            content.push(Line::from(vec![
+                Span::styled(
+                    "PRESS ESC TO EXIT",
+                    Style::default().fg(Color::DarkGray).add_modifier(Modifier::ITALIC),
+                ),
+            ]));
+        }
+    }
 
-    message_widget.render(popup_area, buf);
-}
-
-fn centered_rect(percent_x: u16, percent_y: u16, r: Rect) -> Rect {
-    let popup_layout = Layout::default()
-        .direction(Direction::Vertical)
-        .constraints([
-            Constraint::Percentage((100 - percent_y) / 2),
-            Constraint::Percentage(percent_y),
-            Constraint::Percentage((100 - percent_y) / 2),
-        ])
-        .split(r);
-
-    Layout::default()
-        .direction(Direction::Horizontal)
-        .constraints([
-            Constraint::Percentage((100 - percent_x) / 2),
-            Constraint::Percentage(percent_x),
-            Constraint::Percentage((100 - percent_x) / 2),
-        ])
-        .split(popup_layout[1])[1]
+    // Input line
+    if !matches!(game.current_phase, GamePhase::YearEnd | GamePhase::GameOver) {
+        content.push(Line::from(vec![
+            Span::raw("? "),
+            Span::styled(input_buffer, Style::default().fg(Color::Green)),
+            Span::styled(
+                "_",
+                Style::default().fg(Color::Green).add_modifier(Modifier::RAPID_BLINK),
+            ),
+        ]));
+    }
 }

@@ -55,25 +55,25 @@ impl Score {
     pub fn get_rating_message(&self) -> &'static str {
         match self.rating {
             PerformanceRating::Terrible => {
-                "Due to your extreme mismanagement, you have been impeached and thrown out of office! \
-                 The people are rallying to lynch you!"
+                "YOUR HEAVY-HANDED PERFORMANCE SMACKS OF NERO AND IVAN IV. \
+                 THE PEOPLE (REMAINING) FIND YOU AN UNPLEASANT RULER, AND, \
+                 FRANKLY, HATE YOUR GUTS!!"
             }
             PerformanceRating::Poor => {
-                "Your poor leadership has left the city in bad shape. \
-                 The people have lost confidence in your rule."
+                "YOUR PERFORMANCE COULD HAVE BEEN SOMEWHAT BETTER, BUT \
+                 REALLY WASN'T TOO BAD AT ALL. THE PEOPLE APPRECIATE THAT."
             }
             PerformanceRating::Fair => {
-                "Your performance was adequate. The city survived, \
-                 but there is much room for improvement."
+                "A FANTASTIC PERFORMANCE!!! CHARLEMAGNE, DISRAELI, AND \
+                 JEFFERSON COMBINED COULD NOT HAVE DONE BETTER!"
             }
             PerformanceRating::Good => {
-                "You have done well! The city has prospered under your rule, \
-                 and the people respect your leadership."
+                "A FANTASTIC PERFORMANCE!!! CHARLEMAGNE, DISRAELI, AND \
+                 JEFFERSON COMBINED COULD NOT HAVE DONE BETTER!"
             }
             PerformanceRating::Excellent => {
-                "Fantastic! You are truly a great leader! \
-                 The city has thrived beyond all expectations. \
-                 Songs will be sung of your reign for generations!"
+                "A FANTASTIC PERFORMANCE!!! CHARLEMAGNE, DISRAELI, AND \
+                 JEFFERSON COMBINED COULD NOT HAVE DONE BETTER!"
             }
         }
     }

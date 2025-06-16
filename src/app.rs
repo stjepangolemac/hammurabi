@@ -122,6 +122,11 @@ impl App {
         let outcomes = self.game.process_year_events();
         self.event_messages.clear();
         
+        // Add starvation report first if any
+        if self.game.deaths_starvation > 0 {
+            self.event_messages.push(format!("YOU STARVED {} PEOPLE", self.game.deaths_starvation));
+        }
+        
         for outcome in outcomes {
             self.event_messages.push(outcome.description);
         }
@@ -152,12 +157,20 @@ impl App {
         );
 
         self.event_messages.clear();
-        self.event_messages.push(format!("Final Population: {}", self.game.population));
-        self.event_messages.push(format!("Final Land: {} acres", self.game.land));
-        self.event_messages.push(format!("Total Deaths: {}", score.total_deaths));
-        self.event_messages.push(format!("Death Rate: {:.1}%", score.death_rate));
-        self.event_messages.push(format!("Acres per Person: {:.1}", score.acres_per_person));
-        self.event_messages.push("".to_string());
-        self.event_messages.push(score.get_rating_message().to_string());
+        
+        if self.game.deaths_starvation > 0 && 
+           self.game.deaths_starvation * 100 / (self.game.population + self.game.deaths_starvation) > 45 {
+            self.event_messages.push("YOU STARVED OVER 45% OF THE POPULATION IN ONE YEAR!".to_string());
+            self.event_messages.push("DUE TO THIS EXTREME MISMANAGEMENT YOU HAVE NOT ONLY".to_string());
+            self.event_messages.push("BEEN IMPEACHED AND THROWN OUT OF OFFICE BUT YOU HAVE".to_string());
+            self.event_messages.push("ALSO BEEN DECLARED NATIONAL FINK!!!!".to_string());
+        } else {
+            self.event_messages.push("IN YOUR 10-YEAR TERM OF OFFICE:".to_string());
+            self.event_messages.push(format!("{:.1} PERCENT OF THE POPULATION STARVED PER YEAR ON AVERAGE", score.death_rate / 10.0));
+            self.event_messages.push(format!("A TOTAL OF {} PEOPLE DIED!!", score.total_deaths));
+            self.event_messages.push(format!("YOU STARTED WITH 10 ACRES PER PERSON AND ENDED WITH {:.1}", score.acres_per_person));
+            self.event_messages.push("".to_string());
+            self.event_messages.push(score.get_rating_message().to_string());
+        }
     }
 }
