@@ -326,34 +326,43 @@ fn draw_instructions(frame: &mut Frame, area: Rect) {
 }
 
 fn draw_splash(frame: &mut Frame, area: Rect) {
-    // Use responsive padding based on terminal size
-    let padding = if frame.area().width >= 80 && frame.area().height >= 24 {
-        1
-    } else {
-        0
-    };
-    
-    // Determine title height based on terminal size
+    // Calculate total content height
     let title_height = if frame.area().width < 80 || frame.area().height < 24 {
         4  // Quadrant size needs less height
     } else {
         8  // Full size needs more height
     };
     
-    // Create layout for the content
+    let total_content_height = 1 + 3 + title_height + 3 + 1 + 1 + 3; // sum of all fixed heights plus 1 spacer
+    
+    // Create a vertically centered area for our content
+    let centered_area = if area.height > total_content_height {
+        let vertical_margin = (area.height - total_content_height) / 2;
+        Layout::default()
+            .direction(Direction::Vertical)
+            .constraints([
+                Constraint::Length(vertical_margin),
+                Constraint::Length(total_content_height),
+                Constraint::Min(0),
+            ])
+            .split(area)[1]
+    } else {
+        area
+    };
+    
+    // Now split the centered area into our content sections
     let chunks = Layout::default()
         .direction(Direction::Vertical)
-        .margin(padding)
         .constraints([
             Constraint::Length(1), // Top decoration
             Constraint::Length(3), // Top text
             Constraint::Length(title_height), // Big title
             Constraint::Length(3), // Subtitle
             Constraint::Length(1), // Bottom decoration
-            Constraint::Min(0),    // Spacer
+            Constraint::Length(1), // Small spacer
             Constraint::Length(3), // Instructions
         ])
-        .split(area);
+        .split(centered_area);
 
     // Top decoration
     let decoration_line = "═══════════════════════════════════════════════════════════════";
