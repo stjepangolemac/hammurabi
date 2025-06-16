@@ -117,7 +117,8 @@ pub fn draw(frame: &mut Frame, app: &App) {
 
     let paragraph = Paragraph::new(content)
         .style(Style::default().fg(Color::White))
-        .alignment(Alignment::Left);
+        .alignment(Alignment::Left)
+        .wrap(ratatui::widgets::Wrap { trim: true });
 
     paragraph.render(area, frame.buffer_mut());
 }
