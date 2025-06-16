@@ -14,7 +14,6 @@ pub enum ActionResult {
     InsufficientGrain,
     InsufficientLand,
     InsufficientPopulation,
-    InvalidAmount,
 }
 
 impl GameState {

@@ -33,6 +33,7 @@ pub enum GamePhase {
 }
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct YearSummary {
     pub year: u32,
     pub population: u32,
@@ -89,9 +90,6 @@ impl GameState {
         self.acres_planted = 0;
     }
 
-    pub fn can_afford_land(&self, acres: u32) -> bool {
-        acres * self.land_price <= self.grain
-    }
 
     pub fn max_plantable_acres(&self) -> u32 {
         let by_population = self.population * 10;

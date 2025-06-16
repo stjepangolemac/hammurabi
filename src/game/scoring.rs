@@ -1,4 +1,5 @@
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct Score {
     pub total_deaths: u32,
     pub death_rate: f32,

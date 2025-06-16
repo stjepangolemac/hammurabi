@@ -11,6 +11,7 @@ pub enum RandomEvent {
 }
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct EventOutcome {
     pub event: RandomEvent,
     pub description: String,

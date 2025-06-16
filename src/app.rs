@@ -108,7 +108,6 @@ impl App {
                 ActionResult::InsufficientLand => {
                     self.message = self.messages.insufficient_land_message();
                 }
-                _ => {}
             }
         } else if self.input_buffer.is_empty() {
             self.game.current_phase = GamePhase::Planting;
@@ -132,7 +131,6 @@ impl App {
                 ActionResult::InsufficientPopulation => {
                     self.message = self.messages.insufficient_workers_message();
                 }
-                _ => {}
             }
         }
     }
@@ -148,7 +146,10 @@ impl App {
                 ActionResult::InsufficientGrain => {
                     self.message = self.messages.insufficient_grain_feeding_message();
                 }
-                _ => {}
+                ActionResult::InsufficientLand | ActionResult::InsufficientPopulation => {
+                    // These should never happen for feeding, but handle them to be exhaustive
+                    unreachable!()
+                }
             }
         }
     }
