@@ -19,7 +19,7 @@ This implementation features:
 
 ## 📸 Screenshots
 
-![Hammurabi Splash Screen](screenshots/splash.png)
+![Hammurabi Splash Screen](https://raw.githubusercontent.com/stjepangolemac/hammurabi/main/screenshots/splash.png)
 
 ## 🚀 Installation
 
