@@ -3,37 +3,93 @@ name: Release
 on:
   push:
     tags:
-      - v*
+      - 'v*'
+
+env:
+  CARGO_TERM_COLOR: always
 
 jobs:
-  release:
-    name: Release - ${{ matrix.platform.target }}
+  build-release:
+    name: Build Release
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        platform:
-          - target: x86_64-pc-windows-msvc
-            os: windows-latest
-          - target: x86_64-unknown-linux-gnu
-            os: ubuntu-latest
-          - target: x86_64-apple-darwin
-            os: macos-latest
-          - target: aarch64-apple-darwin
-            os: macos-latest
-    runs-on: ${{ matrix.platform.os }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            artifact_name: hammurabi
+            asset_name: hammurabi-linux-amd64
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact_name: hammurabi.exe
+            asset_name: hammurabi-windows-amd64
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            artifact_name: hammurabi
+            asset_name: hammurabi-macos-amd64
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            artifact_name: hammurabi
+            asset_name: hammurabi-macos-aarch64
 
-      - name: Install Rust
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.platform.target }}
+          targets: ${{ matrix.target }}
 
-      - name: Build and Upload
-        uses: taiki-e/upload-rust-binary-action@v1
+      - name: Build
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Upload binaries to artifacts
+        uses: actions/upload-artifact@v4
         with:
-          bin: hammurabi
-          target: ${{ matrix.platform.target }}
-          archive: hammurabi-$target
+          name: ${{ matrix.asset_name }}
+          path: target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
+
+  publish-release:
+    name: Publish Release
+    needs: build-release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: Create archives
+        run: |
+          cd artifacts
+          for dir in */; do
+            if [[ "$dir" == *"windows"* ]]; then
+              cd "$dir"
+              zip -r "../${dir%/}.zip" *
+              cd ..
+            else
+              tar czf "${dir%/}.tar.gz" -C "$dir" .
+            fi
+          done
+          ls -la
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            artifacts/*.tar.gz
+            artifacts/*.zip
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
