@@ -62,6 +62,8 @@ jobs:
     name: Publish Release
     needs: build-release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -91,5 +93,6 @@ jobs:
             artifacts/*.tar.gz
             artifacts/*.zip
           generate_release_notes: true
+          fail_on_unmatched_files: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
