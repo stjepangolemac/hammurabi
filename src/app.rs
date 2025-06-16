@@ -108,6 +108,10 @@ impl App {
                 ActionResult::InsufficientLand => {
                     self.message = self.messages.insufficient_land_message();
                 }
+                ActionResult::InsufficientPopulation => {
+                    // This should never happen for land transactions, but handle it to be exhaustive
+                    unreachable!()
+                }
             }
         } else if self.input_buffer.is_empty() {
             self.game.current_phase = GamePhase::Planting;
