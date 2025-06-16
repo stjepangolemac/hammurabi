@@ -13,18 +13,18 @@ jobs:
     name: Create Release
     runs-on: ubuntu-latest
     outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      release_id: ${{ steps.create_release.outputs.id }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
           draft: false
           prerelease: false
+          generate_release_notes: true
 
   build-release:
     name: Build Release - ${{ matrix.platform.release_for }}
@@ -81,11 +81,7 @@ jobs:
           cd -
 
       - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./${{ matrix.platform.name }}
-          asset_name: ${{ matrix.platform.name }}
-          asset_content_type: application/octet-stream
+          tag_name: ${{ github.ref_name }}
+          files: ${{ matrix.platform.name }}
