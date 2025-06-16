@@ -1,5 +1,5 @@
-use rand::{Rng, SeedableRng};
 use rand::rngs::StdRng;
+use rand::{Rng, SeedableRng};
 
 #[derive(Debug, Clone)]
 pub struct GameState {
@@ -79,7 +79,7 @@ impl GameState {
         self.year += 1;
         self.land_price = self.rng.gen_range(17..=26);
         self.current_phase = GamePhase::LandTransaction;
-        
+
         // Reset per-year tracking variables
         self.harvest_yield = 0;
         self.grain_eaten_by_rats = 0;
@@ -90,12 +90,11 @@ impl GameState {
         self.acres_planted = 0;
     }
 
-
     pub fn max_plantable_acres(&self) -> u32 {
         let by_population = self.population * 10;
         let by_grain = self.grain;
         let by_land = self.land;
-        
+
         by_population.min(by_grain).min(by_land)
     }
 
@@ -107,16 +106,17 @@ impl GameState {
         if self.year > 10 {
             return true;
         }
-        
+
         if self.population == 0 {
             return true;
         }
-        
-        if self.deaths_starvation > 0 && 
-           self.deaths_starvation * 100 / (self.population + self.deaths_starvation) > 45 {
+
+        if self.deaths_starvation > 0
+            && self.deaths_starvation * 100 / (self.population + self.deaths_starvation) > 45
+        {
             return true;
         }
-        
+
         false
     }
 

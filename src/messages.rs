@@ -1,6 +1,6 @@
+use rand::rngs::StdRng;
 use rand::seq::SliceRandom;
 use rand::SeedableRng;
-use rand::rngs::StdRng;
 
 pub struct MessageTemplates {
     rng: StdRng,
@@ -18,7 +18,7 @@ impl MessageTemplates {
     pub fn harvest_message(&mut self, yield_per_acre: u32, total: u32) -> String {
         let templates = [
             "THY HARVEST YIELDED {} BUSHELS PER ACRE, TOTAL: {} BUSHELS",
-            "THE GODS SMILED UPON THY FIELDS - {} BUSHELS PER ACRE, {} BUSHELS IN TOTAL", 
+            "THE GODS SMILED UPON THY FIELDS - {} BUSHELS PER ACRE, {} BUSHELS IN TOTAL",
             "THY LABORERS REAPED {} BUSHELS FROM EACH ACRE, GATHERING {} BUSHELS",
             "BEHOLD! EACH ACRE PRODUCED {} BUSHELS, TOTALING {} BUSHELS",
             "THE EARTH GRANTED THEE {} BUSHELS PER ACRE, {} BUSHELS NOW FILL THY STORES",
@@ -28,9 +28,10 @@ impl MessageTemplates {
             "THY TOILING SUBJECTS GATHERED {} BUSHELS PER ACRE, AMASSING {} BUSHELS",
             "FORTUNE FAVORED THY CROPS - {} BUSHELS PER ACRE, {} BUSHELS IN ALL",
         ];
-        
+
         let template = templates.choose(&mut self.rng).unwrap();
-        template.replacen("{}", &yield_per_acre.to_string(), 1)
+        template
+            .replacen("{}", &yield_per_acre.to_string(), 1)
             .replacen("{}", &total.to_string(), 1)
     }
 
@@ -47,7 +48,7 @@ impl MessageTemplates {
             "THE SCURRYING MENACE CLAIMED {} BUSHELS!",
             "THY GRAIN SUFFERED - {} BUSHELS LOST TO RATS!",
         ];
-        
+
         let template = templates.choose(&mut self.rng).unwrap();
         template.replace("{}", &amount.to_string())
     }
@@ -65,7 +66,7 @@ impl MessageTemplates {
             "A VILE CONTAGION SPREAD! HALF OF THY POPULATION IS NO MORE!",
             "PLAGUE DEMONS VISITED THY REALM! HALF THY SUBJECTS DIED!",
         ];
-        
+
         templates.choose(&mut self.rng).unwrap().to_string()
     }
 
@@ -82,7 +83,7 @@ impl MessageTemplates {
             "THE PROMISE OF THY RULE BROUGHT {} NEW SUBJECTS",
             "{} PEOPLE CAME TO SERVE UNDER THY BANNER",
         ];
-        
+
         let template = templates.choose(&mut self.rng).unwrap();
         template.replace("{}", &amount.to_string())
     }
@@ -100,7 +101,7 @@ impl MessageTemplates {
             "THY MISMANAGEMENT IS KNOWN - NONE WILL COME",
             "A KINGDOM OF HUNGER ATTRACTS NO NEW SOULS",
         ];
-        
+
         templates.choose(&mut self.rng).unwrap().to_string()
     }
 
@@ -117,7 +118,7 @@ impl MessageTemplates {
             "THY GRANARIES FAILED {} WHO NOW LIE DEAD",
             "{} STARVED UNDER THY WATCH",
         ];
-        
+
         let template = templates.choose(&mut self.rng).unwrap();
         template.replace("{}", &amount.to_string())
     }
@@ -135,7 +136,7 @@ impl MessageTemplates {
             "THY GRAIN SUPPLIES FORBID THIS ACTION!",
             "THOU CANST NOT AFFORD SUCH LUXURY!",
         ];
-        
+
         templates.choose(&mut self.rng).unwrap().to_string()
     }
 
@@ -152,7 +153,7 @@ impl MessageTemplates {
             "CHECK THY RECORDS - THOU HAST LESS LAND!",
             "THY KINGDOM'S BORDERS CONTAIN NOT SO MUCH!",
         ];
-        
+
         templates.choose(&mut self.rng).unwrap().to_string()
     }
 
@@ -169,7 +170,7 @@ impl MessageTemplates {
             "MORE GRAIN IS NEEDED FOR SUCH PLANTING!",
             "THY STORES LACK SUFFICIENT PLANTING GRAIN!",
         ];
-        
+
         templates.choose(&mut self.rng).unwrap().to_string()
     }
 
@@ -186,7 +187,7 @@ impl MessageTemplates {
             "THY KINGDOM CANNOT PLANT PHANTOM FIELDS!",
             "THE LAND THOU SEEKEST TO PLANT IS NOT THINE!",
         ];
-        
+
         templates.choose(&mut self.rng).unwrap().to_string()
     }
 
@@ -203,7 +204,7 @@ impl MessageTemplates {
             "INSUFFICIENT HANDS FOR SO MANY FIELDS!",
             "THY WORKFORCE CANNOT MANAGE SUCH ACREAGE!",
         ];
-        
+
         templates.choose(&mut self.rng).unwrap().to_string()
     }
 
@@ -220,7 +221,7 @@ impl MessageTemplates {
             "THY STORES PROTEST SUCH LAVISH FEEDING!",
             "ALAS, THY GRAIN IS INSUFFICIENT!",
         ];
-        
+
         templates.choose(&mut self.rng).unwrap().to_string()
     }
 }

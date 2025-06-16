@@ -263,7 +263,7 @@ fn draw_instructions(frame: &mut Frame, area: Rect) {
     } else {
         0
     };
-    
+
     // Split area into sections with responsive padding
     let chunks = Layout::default()
         .direction(Direction::Vertical)
@@ -290,24 +290,48 @@ fn draw_instructions(frame: &mut Frame, area: Rect) {
     let instructions = vec![
         Line::from(""),
         Line::from(vec![
-            Span::styled("I. ", Style::default().fg(Color::LightRed).add_modifier(Modifier::BOLD)),
-            Span::styled("HOW MUCH LAND TO BUY OR SELL (LAND COSTS BETWEEN 17 AND 26 BUSHELS OF", Style::default().fg(Color::White)),
+            Span::styled(
+                "I. ",
+                Style::default()
+                    .fg(Color::LightRed)
+                    .add_modifier(Modifier::BOLD),
+            ),
+            Span::styled(
+                "HOW MUCH LAND TO BUY OR SELL (LAND COSTS BETWEEN 17 AND 26 BUSHELS OF",
+                Style::default().fg(Color::White),
+            ),
         ]),
         Line::from("   GRAIN)."),
         Line::from(""),
         Line::from(vec![
-            Span::styled("II. ", Style::default().fg(Color::LightRed).add_modifier(Modifier::BOLD)),
-            Span::styled("HOW MANY BUSHELS TO FEED YOUR PEOPLE (20 PER PERSON PER YEAR", Style::default().fg(Color::White)),
+            Span::styled(
+                "II. ",
+                Style::default()
+                    .fg(Color::LightRed)
+                    .add_modifier(Modifier::BOLD),
+            ),
+            Span::styled(
+                "HOW MANY BUSHELS TO FEED YOUR PEOPLE (20 PER PERSON PER YEAR",
+                Style::default().fg(Color::White),
+            ),
         ]),
         Line::from("    REQUIRED)."),
         Line::from(""),
         Line::from(vec![
-            Span::styled("III. ", Style::default().fg(Color::LightRed).add_modifier(Modifier::BOLD)),
-            Span::styled("HOW MANY ACRES OF LAND TO PLANT SEED IN (REQUIRES 1 BUSHEL +", Style::default().fg(Color::White)),
+            Span::styled(
+                "III. ",
+                Style::default()
+                    .fg(Color::LightRed)
+                    .add_modifier(Modifier::BOLD),
+            ),
+            Span::styled(
+                "HOW MANY ACRES OF LAND TO PLANT SEED IN (REQUIRES 1 BUSHEL +",
+                Style::default().fg(Color::White),
+            ),
         ]),
         Line::from("     1/10TH A PERSON TO TILL PER YEAR)."),
     ];
-    
+
     let instructions_paragraph = Paragraph::new(instructions)
         .style(Style::default().fg(Color::White))
         .alignment(Alignment::Left)
@@ -328,13 +352,13 @@ fn draw_instructions(frame: &mut Frame, area: Rect) {
 fn draw_splash(frame: &mut Frame, area: Rect) {
     // Calculate total content height
     let title_height = if frame.area().width < 80 || frame.area().height < 24 {
-        4  // Quadrant size needs less height
+        4 // Quadrant size needs less height
     } else {
-        8  // Full size needs more height
+        8 // Full size needs more height
     };
-    
+
     let total_content_height = 1 + 3 + title_height + 3 + 1 + 1 + 3; // sum of all fixed heights plus 1 spacer
-    
+
     // Create a vertically centered area for our content
     let centered_area = if area.height > total_content_height {
         let vertical_margin = (area.height - total_content_height) / 2;
@@ -349,18 +373,18 @@ fn draw_splash(frame: &mut Frame, area: Rect) {
     } else {
         area
     };
-    
+
     // Now split the centered area into our content sections
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
-            Constraint::Length(1), // Top decoration
-            Constraint::Length(3), // Top text
+            Constraint::Length(1),            // Top decoration
+            Constraint::Length(3),            // Top text
             Constraint::Length(title_height), // Big title
-            Constraint::Length(3), // Subtitle
-            Constraint::Length(1), // Bottom decoration
-            Constraint::Length(1), // Small spacer
-            Constraint::Length(3), // Instructions
+            Constraint::Length(3),            // Subtitle
+            Constraint::Length(1),            // Bottom decoration
+            Constraint::Length(1),            // Small spacer
+            Constraint::Length(3),            // Instructions
         ])
         .split(centered_area);
 
@@ -387,7 +411,7 @@ fn draw_splash(frame: &mut Frame, area: Rect) {
     } else {
         PixelSize::Full
     };
-    
+
     let big_text = BigText::builder()
         .pixel_size(pixel_size)
         .style(

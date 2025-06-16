@@ -11,10 +11,7 @@ use crossterm::{
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use ratatui::{
-    backend::CrosstermBackend,
-    Terminal,
-};
+use ratatui::{backend::CrosstermBackend, Terminal};
 use std::io;
 
 use crate::app::App;
@@ -30,7 +27,7 @@ struct Cli {
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
-    
+
     // Setup terminal
     enable_raw_mode()?;
     let mut stdout = io::stdout();
@@ -58,42 +55,37 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-fn run_app<B: ratatui::backend::Backend>(
-    terminal: &mut Terminal<B>,
-    mut app: App,
-) -> Result<()> {
+fn run_app<B: ratatui::backend::Backend>(terminal: &mut Terminal<B>, mut app: App) -> Result<()> {
     let events = EventHandler::new();
 
     loop {
         terminal.draw(|f| ui::draw(f, &app))?;
 
         match events.next()? {
-            Event::Key(key) => {
-                match key.code {
-                    KeyCode::Esc => {
-                        if key.modifiers.contains(KeyModifiers::NONE) {
-                            app.should_quit = true;
-                        }
+            Event::Key(key) => match key.code {
+                KeyCode::Esc => {
+                    if key.modifiers.contains(KeyModifiers::NONE) {
+                        app.should_quit = true;
                     }
-                    KeyCode::Char('c') => {
-                        if key.modifiers.contains(KeyModifiers::CONTROL) {
-                            app.should_quit = true;
-                        } else {
-                            app.handle_input('c');
-                        }
-                    }
-                    KeyCode::Enter => {
-                        app.handle_enter()?;
-                    }
-                    KeyCode::Backspace => {
-                        app.handle_backspace();
-                    }
-                    KeyCode::Char(c) => {
-                        app.handle_input(c);
-                    }
-                    _ => {}
                 }
-            }
+                KeyCode::Char('c') => {
+                    if key.modifiers.contains(KeyModifiers::CONTROL) {
+                        app.should_quit = true;
+                    } else {
+                        app.handle_input('c');
+                    }
+                }
+                KeyCode::Enter => {
+                    app.handle_enter()?;
+                }
+                KeyCode::Backspace => {
+                    app.handle_backspace();
+                }
+                KeyCode::Char(c) => {
+                    app.handle_input(c);
+                }
+                _ => {}
+            },
             Event::Tick => {
                 app.check_splash_timeout();
             }

@@ -1,6 +1,6 @@
-use rand::Rng;
 use crate::game::state::GameState;
 use crate::messages::MessageTemplates;
+use rand::Rng;
 
 #[derive(Debug, Clone)]
 pub enum RandomEvent {

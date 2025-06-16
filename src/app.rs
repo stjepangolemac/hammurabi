@@ -1,4 +1,4 @@
-use crate::game::{GameState, GamePhase, GameAction, ActionResult, evaluate_performance};
+use crate::game::{evaluate_performance, ActionResult, GameAction, GamePhase, GameState};
 use crate::messages::MessageTemplates;
 use anyhow::Result;
 use std::time::Instant;
@@ -33,8 +33,11 @@ impl App {
             self.splash_start = None;
             return;
         }
-        
-        if matches!(self.game.current_phase, GamePhase::Instructions | GamePhase::YearEnd | GamePhase::GameOver) {
+
+        if matches!(
+            self.game.current_phase,
+            GamePhase::Instructions | GamePhase::YearEnd | GamePhase::GameOver
+        ) {
             return;
         }
 
@@ -53,7 +56,7 @@ impl App {
             self.splash_start = None;
             return;
         }
-        
+
         self.input_buffer.pop();
     }
 
@@ -74,7 +77,7 @@ impl App {
         }
         Ok(())
     }
-    
+
     pub fn check_splash_timeout(&mut self) {
         if let Some(start) = self.splash_start {
             if start.elapsed().as_secs() >= 5 && self.game.current_phase == GamePhase::Splash {
@@ -141,7 +144,10 @@ impl App {
 
     fn process_feeding(&mut self) {
         if let Ok(bushels) = self.input_buffer.trim().parse::<u32>() {
-            match self.game.execute_action(GameAction::FeedPopulation(bushels)) {
+            match self
+                .game
+                .execute_action(GameAction::FeedPopulation(bushels))
+            {
                 ActionResult::Success => {
                     self.process_year_end();
                     self.input_buffer.clear();
@@ -162,12 +168,15 @@ impl App {
         // Process random events
         let outcomes = self.game.process_year_events(&mut self.messages);
         self.event_messages.clear();
-        
+
         // Add starvation report first if any
         if self.game.deaths_starvation > 0 {
-            self.event_messages.push(self.messages.starvation_message(self.game.deaths_starvation));
+            self.event_messages.push(
+                self.messages
+                    .starvation_message(self.game.deaths_starvation),
+            );
         }
-        
+
         for outcome in outcomes {
             self.event_messages.push(outcome.description);
         }
@@ -198,20 +207,39 @@ impl App {
         );
 
         self.event_messages.clear();
-        
-        if self.game.deaths_starvation > 0 && 
-           self.game.deaths_starvation * 100 / (self.game.population + self.game.deaths_starvation) > 45 {
-            self.event_messages.push("THOU HAST STARVED MORE THAN HALF THY SUBJECTS IN A SINGLE YEAR!".to_string());
-            self.event_messages.push("FOR THIS MOST GRIEVOUS SIN, THOU ART NOT ONLY".to_string());
-            self.event_messages.push("CAST FROM THY THRONE, BUT SHALL BE REMEMBERED".to_string());
-            self.event_messages.push("AS THE GREATEST FOOL TO EVER WEAR A CROWN!!!!".to_string());
+
+        if self.game.deaths_starvation > 0
+            && self.game.deaths_starvation * 100
+                / (self.game.population + self.game.deaths_starvation)
+                > 45
+        {
+            self.event_messages.push(
+                "THOU HAST STARVED MORE THAN HALF THY SUBJECTS IN A SINGLE YEAR!".to_string(),
+            );
+            self.event_messages
+                .push("FOR THIS MOST GRIEVOUS SIN, THOU ART NOT ONLY".to_string());
+            self.event_messages
+                .push("CAST FROM THY THRONE, BUT SHALL BE REMEMBERED".to_string());
+            self.event_messages
+                .push("AS THE GREATEST FOOL TO EVER WEAR A CROWN!!!!".to_string());
         } else {
-            self.event_messages.push("IN THY TEN-YEAR REIGN OVER BABYLON:".to_string());
-            self.event_messages.push(format!("{:.1} PERCENT OF THY SUBJECTS STARVED EACH YEAR", score.death_rate / 10.0));
-            self.event_messages.push(format!("A TOTAL OF {} SOULS PERISHED UNDER THY RULE!", score.total_deaths));
-            self.event_messages.push(format!("THOU BEGAN WITH 10 ACRES PER SUBJECT AND ENDED WITH {:.1}", score.acres_per_person));
+            self.event_messages
+                .push("IN THY TEN-YEAR REIGN OVER BABYLON:".to_string());
+            self.event_messages.push(format!(
+                "{:.1} PERCENT OF THY SUBJECTS STARVED EACH YEAR",
+                score.death_rate / 10.0
+            ));
+            self.event_messages.push(format!(
+                "A TOTAL OF {} SOULS PERISHED UNDER THY RULE!",
+                score.total_deaths
+            ));
+            self.event_messages.push(format!(
+                "THOU BEGAN WITH 10 ACRES PER SUBJECT AND ENDED WITH {:.1}",
+                score.acres_per_person
+            ));
             self.event_messages.push("".to_string());
-            self.event_messages.push(score.get_rating_message().to_string());
+            self.event_messages
+                .push(score.get_rating_message().to_string());
         }
     }
 }

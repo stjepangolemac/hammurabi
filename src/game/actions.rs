@@ -84,7 +84,7 @@ impl GameState {
         }
 
         self.grain -= bushels;
-        
+
         let people_fed = bushels / 20;
         if people_fed < self.population {
             self.deaths_starvation = self.population - people_fed;
