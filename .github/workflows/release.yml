@@ -3,67 +3,37 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
-
-env:
-  CARGO_TERM_COLOR: always
+      - v*
 
 jobs:
-  build-release:
-    name: Build Release - ${{ matrix.platform.release_for }}
+  release:
+    name: Release - ${{ matrix.platform.target }}
     strategy:
       matrix:
         platform:
-          - release_for: Windows-x86_64
+          - target: x86_64-pc-windows-msvc
             os: windows-latest
-            target: x86_64-pc-windows-msvc
-            bin: hammurabi.exe
-            name: hammurabi-Windows-x86_64.zip
-
-          - release_for: macOS-x86_64
-            os: macOS-latest
-            target: x86_64-apple-darwin
-            bin: hammurabi
-            name: hammurabi-Darwin-x86_64.tar.gz
-
-          - release_for: macOS-aarch64
-            os: macOS-latest
-            target: aarch64-apple-darwin
-            bin: hammurabi
-            name: hammurabi-Darwin-aarch64.tar.gz
-
-          - release_for: Linux-x86_64
+          - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-            bin: hammurabi
-            name: hammurabi-Linux-x86_64.tar.gz
-
+          - target: x86_64-apple-darwin
+            os: macos-latest
+          - target: aarch64-apple-darwin
+            os: macos-latest
     runs-on: ${{ matrix.platform.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Rust
+      - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.platform.target }}
 
-      - name: Build binary
-        run: cargo build --release --target ${{ matrix.platform.target }}
-
-      - name: Package as archive
-        shell: bash
-        run: |
-          cd target/${{ matrix.platform.target }}/release
-          if [[ "${{ matrix.platform.os }}" == "windows-latest" ]]; then
-            7z a ../../../${{ matrix.platform.name }} ${{ matrix.platform.bin }}
-          else
-            tar czvf ../../../${{ matrix.platform.name }} ${{ matrix.platform.bin }}
-          fi
-          cd -
-
-      - name: Upload Release Asset
-        uses: softprops/action-gh-release@v1
+      - name: Build and Upload
+        uses: taiki-e/upload-rust-binary-action@v1
         with:
-          tag_name: ${{ github.ref_name }}
-          files: ${{ matrix.platform.name }}
+          bin: hammurabi
+          target: ${{ matrix.platform.target }}
+          archive: hammurabi-$target
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
