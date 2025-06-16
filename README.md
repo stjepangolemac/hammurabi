@@ -23,7 +23,7 @@ This implementation features:
 
 ## 🚀 Installation
 
-### From crates.io (Coming Soon)
+### From crates.io
 
 ```bash
 cargo install hammurabi
