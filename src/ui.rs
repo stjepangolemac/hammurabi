@@ -218,57 +218,97 @@ fn render_input_section<'a>(game: &crate::game::GameState, input_buffer: &'a str
 }
 
 fn draw_instructions(frame: &mut Frame, area: Rect) {
-    let mut content = Vec::new();
+    // Split area into sections
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .margin(2)
+        .constraints([
+            Constraint::Length(3),  // Title
+            Constraint::Length(16), // Instructions
+            Constraint::Min(0),     // Spacer
+            Constraint::Length(1),  // Press enter
+        ])
+        .split(area);
     
     // Title
-    content.push(Line::from(vec![
-        Span::styled(
-            "HAMURABI INSTRUCTIONS",
-            Style::default().fg(Color::White).add_modifier(Modifier::BOLD),
-        ),
-    ]));
-    content.push(Line::from(""));
-    content.push(Line::from(""));
+    let title = Paragraph::new("HAMURABI INSTRUCTIONS")
+        .style(Style::default().fg(Color::White).add_modifier(Modifier::BOLD))
+        .alignment(Alignment::Center);
+    title.render(chunks[0], frame.buffer_mut());
     
-    // Instructions with roman numerals in orange
-    content.push(Line::from(vec![
-        Span::styled("I. ", Style::default().fg(Color::LightRed).add_modifier(Modifier::BOLD)),
-        Span::raw("HOW MUCH LAND TO BUY OR SELL (LAND COSTS BETWEEN"),
-    ]));
-    content.push(Line::from("   17 AND 26 BUSHELS OF GRAIN)."));
-    content.push(Line::from(""));
+    // Instructions area - split into 3 items
+    let instruction_chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([
+            Constraint::Length(3),  // First instruction
+            Constraint::Length(1),  // Spacer
+            Constraint::Length(3),  // Second instruction  
+            Constraint::Length(1),  // Spacer
+            Constraint::Length(3),  // Third instruction
+            Constraint::Min(0),     // Remaining space
+        ])
+        .split(chunks[1]);
     
-    content.push(Line::from(vec![
-        Span::styled("II. ", Style::default().fg(Color::LightRed).add_modifier(Modifier::BOLD)),
-        Span::raw("HOW MANY BUSHELS TO FEED YOUR PEOPLE (20 PER"),
-    ]));
-    content.push(Line::from("    PERSON PER YEAR REQUIRED)."));
-    content.push(Line::from(""));
+    // Render each instruction with proper alignment
+    render_instruction(
+        frame,
+        instruction_chunks[0],
+        "I.",
+        vec![
+            "HOW MUCH LAND TO BUY OR SELL (LAND COSTS BETWEEN",
+            "17 AND 26 BUSHELS OF GRAIN).",
+        ],
+    );
     
-    content.push(Line::from(vec![
-        Span::styled("III. ", Style::default().fg(Color::LightRed).add_modifier(Modifier::BOLD)),
-        Span::raw("HOW MANY ACRES OF LAND TO PLANT SEED IN"),
-    ]));
-    content.push(Line::from("     (REQUIRES 1 BUSHEL + 1/10TH A PERSON TO TILL PER YEAR)."));
+    render_instruction(
+        frame,
+        instruction_chunks[2],
+        "II.",
+        vec![
+            "HOW MANY BUSHELS TO FEED YOUR PEOPLE (20 PER",
+            "PERSON PER YEAR REQUIRED).",
+        ],
+    );
     
-    // Add spacing before the prompt
-    for _ in 0..6 {
-        content.push(Line::from(""));
-    }
+    render_instruction(
+        frame,
+        instruction_chunks[4],
+        "III.",
+        vec![
+            "HOW MANY ACRES OF LAND TO PLANT SEED IN",
+            "(REQUIRES 1 BUSHEL + 1/10TH A PERSON TO TILL PER YEAR).",
+        ],
+    );
     
     // Press enter prompt
-    content.push(Line::from(vec![
-        Span::styled(
-            "PRESS ENTER TO START...",
-            Style::default().fg(Color::DarkGray).add_modifier(Modifier::ITALIC),
-        ),
-    ]));
-    
-    let paragraph = Paragraph::new(content)
-        .style(Style::default().fg(Color::White))
+    let prompt = Paragraph::new("PRESS ENTER TO START...")
+        .style(Style::default().fg(Color::DarkGray).add_modifier(Modifier::ITALIC))
         .alignment(Alignment::Center);
+    prompt.render(chunks[3], frame.buffer_mut());
+}
+
+fn render_instruction(frame: &mut Frame, area: Rect, number: &str, lines: Vec<&str>) {
+    // Split the area into number and text columns
+    let chunks = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints([
+            Constraint::Length(6),   // Space for "III. "
+            Constraint::Min(0),      // Rest for text
+        ])
+        .split(area);
     
-    paragraph.render(area, frame.buffer_mut());
+    // Render the number
+    let number_text = Paragraph::new(number)
+        .style(Style::default().fg(Color::LightRed).add_modifier(Modifier::BOLD))
+        .alignment(Alignment::Right);
+    number_text.render(chunks[0], frame.buffer_mut());
+    
+    // Render the instruction text
+    let text = lines.join("\n");
+    let instruction_text = Paragraph::new(text)
+        .style(Style::default().fg(Color::White))
+        .wrap(ratatui::widgets::Wrap { trim: false });
+    instruction_text.render(chunks[1], frame.buffer_mut());
 }
 
 fn draw_splash(frame: &mut Frame, area: Rect) {

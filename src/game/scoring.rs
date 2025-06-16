@@ -52,28 +52,26 @@ pub fn evaluate_performance(
 }
 
 impl Score {
-    pub fn get_rating_message(&self) -> &'static str {
+    pub fn get_rating_message(&self) -> Vec<&'static str> {
         match self.rating {
             PerformanceRating::Terrible => {
-                "YOUR HEAVY-HANDED PERFORMANCE SMACKS OF NERO AND IVAN IV. \
-                 THE PEOPLE (REMAINING) FIND YOU AN UNPLEASANT RULER, AND, \
-                 FRANKLY, HATE YOUR GUTS!!"
+                vec![
+                    "YOUR HEAVY-HANDED PERFORMANCE SMACKS OF NERO AND IVAN IV.",
+                    "THE PEOPLE (REMAINING) FIND YOU AN UNPLEASANT RULER, AND,",
+                    "FRANKLY, HATE YOUR GUTS!!"
+                ]
             }
             PerformanceRating::Poor => {
-                "YOUR PERFORMANCE COULD HAVE BEEN SOMEWHAT BETTER, BUT \
-                 REALLY WASN'T TOO BAD AT ALL. THE PEOPLE APPRECIATE THAT."
+                vec![
+                    "YOUR PERFORMANCE COULD HAVE BEEN SOMEWHAT BETTER, BUT",
+                    "REALLY WASN'T TOO BAD AT ALL. THE PEOPLE APPRECIATE THAT."
+                ]
             }
-            PerformanceRating::Fair => {
-                "A FANTASTIC PERFORMANCE!!! CHARLEMAGNE, DISRAELI, AND \
-                 JEFFERSON COMBINED COULD NOT HAVE DONE BETTER!"
-            }
-            PerformanceRating::Good => {
-                "A FANTASTIC PERFORMANCE!!! CHARLEMAGNE, DISRAELI, AND \
-                 JEFFERSON COMBINED COULD NOT HAVE DONE BETTER!"
-            }
-            PerformanceRating::Excellent => {
-                "A FANTASTIC PERFORMANCE!!! CHARLEMAGNE, DISRAELI, AND \
-                 JEFFERSON COMBINED COULD NOT HAVE DONE BETTER!"
+            PerformanceRating::Fair | PerformanceRating::Good | PerformanceRating::Excellent => {
+                vec![
+                    "A FANTASTIC PERFORMANCE!!! CHARLEMAGNE, DISRAELI, AND",
+                    "JEFFERSON COMBINED COULD NOT HAVE DONE BETTER!"
+                ]
             }
         }
     }

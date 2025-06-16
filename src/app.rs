@@ -24,7 +24,14 @@ impl App {
     }
 
     pub fn handle_input(&mut self, c: char) {
-        if matches!(self.game.current_phase, GamePhase::Splash | GamePhase::Instructions | GamePhase::YearEnd | GamePhase::GameOver) {
+        // Allow any key to skip splash
+        if matches!(self.game.current_phase, GamePhase::Splash) {
+            self.game.current_phase = GamePhase::Instructions;
+            self.splash_start = None;
+            return;
+        }
+        
+        if matches!(self.game.current_phase, GamePhase::Instructions | GamePhase::YearEnd | GamePhase::GameOver) {
             return;
         }
 
@@ -37,6 +44,13 @@ impl App {
     }
 
     pub fn handle_backspace(&mut self) {
+        // Allow any key to skip splash
+        if matches!(self.game.current_phase, GamePhase::Splash) {
+            self.game.current_phase = GamePhase::Instructions;
+            self.splash_start = None;
+            return;
+        }
+        
         self.input_buffer.pop();
     }
 
@@ -189,7 +203,9 @@ impl App {
             self.event_messages.push(format!("A TOTAL OF {} PEOPLE DIED!!", score.total_deaths));
             self.event_messages.push(format!("YOU STARTED WITH 10 ACRES PER PERSON AND ENDED WITH {:.1}", score.acres_per_person));
             self.event_messages.push("".to_string());
-            self.event_messages.push(score.get_rating_message().to_string());
+            for line in score.get_rating_message() {
+                self.event_messages.push(line.to_string());
+            }
         }
     }
 }
