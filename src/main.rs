@@ -86,7 +86,9 @@ fn run_app<B: ratatui::backend::Backend>(
                     _ => {}
                 }
             }
-            Event::Tick => {}
+            Event::Tick => {
+                app.check_splash_timeout();
+            }
         }
 
         if app.should_quit {

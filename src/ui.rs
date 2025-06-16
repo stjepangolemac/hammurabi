@@ -1,20 +1,60 @@
 use ratatui::{
-    layout::{Alignment, Constraint, Direction, Layout},
+    layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     text::{Line, Span},
     widgets::{Paragraph, Widget},
     Frame,
 };
+use tui_big_text::{BigText, PixelSize};
 use crate::app::App;
 use crate::game::GamePhase;
 
-pub fn draw(frame: &mut Frame, app: &App) {
-    // Single column layout with spacing
+const MAX_WIDTH: u16 = 80;
+const MAX_HEIGHT: u16 = 24;
+
+fn centered_rect(max_width: u16, max_height: u16, r: Rect) -> Rect {
+    let width = r.width.min(max_width);
+    let height = r.height.min(max_height);
+    
+    let horizontal_margin = (r.width.saturating_sub(width)) / 2;
+    let vertical_margin = (r.height.saturating_sub(height)) / 2;
+    
     let area = Layout::default()
         .direction(Direction::Vertical)
-        .margin(2)
-        .constraints([Constraint::Min(0)])
-        .split(frame.area())[0];
+        .margin(0)
+        .constraints([
+            Constraint::Length(vertical_margin),
+            Constraint::Length(height),
+            Constraint::Length(vertical_margin),
+        ])
+        .split(r)[1];
+        
+    Layout::default()
+        .direction(Direction::Horizontal)
+        .margin(0)
+        .constraints([
+            Constraint::Length(horizontal_margin),
+            Constraint::Length(width),
+            Constraint::Length(horizontal_margin),
+        ])
+        .split(area)[1]
+}
+
+pub fn draw(frame: &mut Frame, app: &App) {
+    // Create centered area with max 80x24 dimensions
+    let area = centered_rect(MAX_WIDTH, MAX_HEIGHT, frame.area());
+
+    // Handle splash screen
+    if matches!(app.game.current_phase, GamePhase::Splash) {
+        draw_splash(frame, area);
+        return;
+    }
+
+    // Handle instructions screen separately
+    if matches!(app.game.current_phase, GamePhase::Instructions) {
+        draw_instructions(frame, area);
+        return;
+    }
 
     let mut content = Vec::new();
 
@@ -86,6 +126,9 @@ fn render_input_section<'a>(game: &crate::game::GameState, input_buffer: &'a str
     use crate::game::GamePhase;
     
     match game.current_phase {
+        GamePhase::Splash | GamePhase::Instructions => {
+            // These shouldn't be reached as they are handled separately
+        }
         GamePhase::LandTransaction => {
             let max_buy = if game.land_price > 0 { game.grain / game.land_price } else { 0 };
             content.push(Line::from(""));
@@ -110,7 +153,7 @@ fn render_input_section<'a>(game: &crate::game::GameState, input_buffer: &'a str
             let max_plant = game.max_plantable_acres();
             let max_by_pop = game.population * 10;
             let max_by_grain = game.grain;
-            let max_by_land = game.land;
+            let _max_by_land = game.land;
             
             content.push(Line::from(""));
             content.push(Line::from("HOW MANY ACRES DO YOU WISH TO PLANT WITH SEED?"));
@@ -162,7 +205,7 @@ fn render_input_section<'a>(game: &crate::game::GameState, input_buffer: &'a str
     }
 
     // Input line
-    if !matches!(game.current_phase, GamePhase::YearEnd | GamePhase::GameOver) {
+    if !matches!(game.current_phase, GamePhase::Splash | GamePhase::Instructions | GamePhase::YearEnd | GamePhase::GameOver) {
         content.push(Line::from(vec![
             Span::raw("? "),
             Span::styled(input_buffer, Style::default().fg(Color::Green)),
@@ -172,4 +215,98 @@ fn render_input_section<'a>(game: &crate::game::GameState, input_buffer: &'a str
             ),
         ]));
     }
+}
+
+fn draw_instructions(frame: &mut Frame, area: Rect) {
+    let mut content = Vec::new();
+    
+    // Title
+    content.push(Line::from(vec![
+        Span::styled(
+            "HAMURABI INSTRUCTIONS",
+            Style::default().fg(Color::White).add_modifier(Modifier::BOLD),
+        ),
+    ]));
+    content.push(Line::from(""));
+    content.push(Line::from(""));
+    
+    // Instructions with roman numerals in orange
+    content.push(Line::from(vec![
+        Span::styled("I. ", Style::default().fg(Color::LightRed).add_modifier(Modifier::BOLD)),
+        Span::raw("HOW MUCH LAND TO BUY OR SELL (LAND COSTS BETWEEN"),
+    ]));
+    content.push(Line::from("   17 AND 26 BUSHELS OF GRAIN)."));
+    content.push(Line::from(""));
+    
+    content.push(Line::from(vec![
+        Span::styled("II. ", Style::default().fg(Color::LightRed).add_modifier(Modifier::BOLD)),
+        Span::raw("HOW MANY BUSHELS TO FEED YOUR PEOPLE (20 PER"),
+    ]));
+    content.push(Line::from("    PERSON PER YEAR REQUIRED)."));
+    content.push(Line::from(""));
+    
+    content.push(Line::from(vec![
+        Span::styled("III. ", Style::default().fg(Color::LightRed).add_modifier(Modifier::BOLD)),
+        Span::raw("HOW MANY ACRES OF LAND TO PLANT SEED IN"),
+    ]));
+    content.push(Line::from("     (REQUIRES 1 BUSHEL + 1/10TH A PERSON TO TILL PER YEAR)."));
+    
+    // Add spacing before the prompt
+    for _ in 0..6 {
+        content.push(Line::from(""));
+    }
+    
+    // Press enter prompt
+    content.push(Line::from(vec![
+        Span::styled(
+            "PRESS ENTER TO START...",
+            Style::default().fg(Color::DarkGray).add_modifier(Modifier::ITALIC),
+        ),
+    ]));
+    
+    let paragraph = Paragraph::new(content)
+        .style(Style::default().fg(Color::White))
+        .alignment(Alignment::Center);
+    
+    paragraph.render(area, frame.buffer_mut());
+}
+
+fn draw_splash(frame: &mut Frame, area: Rect) {
+    // Create layout for centering the big text
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .margin(0)
+        .constraints([
+            Constraint::Percentage(40),
+            Constraint::Min(8),
+            Constraint::Percentage(40),
+        ])
+        .split(area);
+
+    // Create the big text widget
+    let big_text = BigText::builder()
+        .pixel_size(PixelSize::Quadrant)
+        .style(Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD))
+        .lines(vec!["HAMMURABI".into()])
+        .centered()
+        .build();
+
+    big_text.render(chunks[1], frame.buffer_mut());
+
+    // Add a subtitle below
+    let subtitle = Paragraph::new("Ancient Kingdom Management Simulator")
+        .style(Style::default().fg(Color::DarkGray).add_modifier(Modifier::ITALIC))
+        .alignment(Alignment::Center);
+    
+    let subtitle_area = Layout::default()
+        .direction(Direction::Vertical)
+        .margin(0)
+        .constraints([
+            Constraint::Length(2),
+            Constraint::Length(1),
+            Constraint::Min(0),
+        ])
+        .split(chunks[2])[1];
+        
+    subtitle.render(subtitle_area, frame.buffer_mut());
 }

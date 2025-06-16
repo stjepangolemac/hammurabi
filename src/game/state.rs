@@ -23,6 +23,8 @@ pub struct GameState {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum GamePhase {
+    Splash,
+    Instructions,
     LandTransaction,
     Planting,
     Feeding,
@@ -68,7 +70,7 @@ impl GameState {
             acres_planted: 0,
             rng,
             history: Vec::new(),
-            current_phase: GamePhase::LandTransaction,
+            current_phase: GamePhase::Splash,
         }
     }
 

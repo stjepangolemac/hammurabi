@@ -1,5 +1,6 @@
 use crate::game::{GameState, GamePhase, GameAction, ActionResult, evaluate_performance};
 use anyhow::Result;
+use std::time::Instant;
 
 pub struct App {
     pub game: GameState,
@@ -7,6 +8,7 @@ pub struct App {
     pub message: String,
     pub event_messages: Vec<String>,
     pub should_quit: bool,
+    pub splash_start: Option<Instant>,
 }
 
 impl App {
@@ -17,11 +19,12 @@ impl App {
             message: String::new(),
             event_messages: Vec::new(),
             should_quit: false,
+            splash_start: Some(Instant::now()),
         }
     }
 
     pub fn handle_input(&mut self, c: char) {
-        if matches!(self.game.current_phase, GamePhase::YearEnd | GamePhase::GameOver) {
+        if matches!(self.game.current_phase, GamePhase::Splash | GamePhase::Instructions | GamePhase::YearEnd | GamePhase::GameOver) {
             return;
         }
 
@@ -39,6 +42,13 @@ impl App {
 
     pub fn handle_enter(&mut self) -> Result<()> {
         match self.game.current_phase {
+            GamePhase::Splash => {
+                self.game.current_phase = GamePhase::Instructions;
+                self.splash_start = None;
+            }
+            GamePhase::Instructions => {
+                self.game.current_phase = GamePhase::LandTransaction;
+            }
             GamePhase::LandTransaction => self.process_land_transaction(),
             GamePhase::Planting => self.process_planting(),
             GamePhase::Feeding => self.process_feeding(),
@@ -46,6 +56,15 @@ impl App {
             GamePhase::GameOver => self.should_quit = true,
         }
         Ok(())
+    }
+    
+    pub fn check_splash_timeout(&mut self) {
+        if let Some(start) = self.splash_start {
+            if start.elapsed().as_secs() >= 5 && self.game.current_phase == GamePhase::Splash {
+                self.game.current_phase = GamePhase::Instructions;
+                self.splash_start = None;
+            }
+        }
     }
 
     fn process_land_transaction(&mut self) {
