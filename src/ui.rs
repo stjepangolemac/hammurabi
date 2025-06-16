@@ -318,7 +318,7 @@ fn draw_splash(frame: &mut Frame, area: Rect) {
             Constraint::Length(1),   // Top decoration
             Constraint::Length(3),   // Top text
             Constraint::Length(8),   // Big title
-            Constraint::Length(4),   // Subtitle
+            Constraint::Length(3),   // Subtitle (reduced from 4)
             Constraint::Length(1),   // Bottom decoration
             Constraint::Min(0),      // Spacer
             Constraint::Length(3),   // Instructions
@@ -354,12 +354,7 @@ fn draw_splash(frame: &mut Frame, area: Rect) {
     // Add subtitle with decorations
     let subtitle_lines = vec![
         Line::from(vec![
-            Span::styled("♦ ", Style::default().fg(Color::Yellow)),
-            Span::styled("KING OF", Style::default().fg(Color::Magenta).add_modifier(Modifier::BOLD)),
-            Span::styled(" ♦", Style::default().fg(Color::Yellow)),
-        ]),
-        Line::from(vec![
-            Span::styled("ANCIENT BABYLONIA", Style::default().fg(Color::Magenta).add_modifier(Modifier::BOLD)),
+            Span::styled("KING OF ANCIENT BABYLONIA", Style::default().fg(Color::Magenta).add_modifier(Modifier::BOLD)),
         ]),
         Line::from(""),
         Line::from(vec![
