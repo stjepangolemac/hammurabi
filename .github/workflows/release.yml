@@ -9,26 +9,8 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  create-release:
-    name: Create Release
-    runs-on: ubuntu-latest
-    outputs:
-      release_id: ${{ steps.create_release.outputs.id }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        
-      - name: Create Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
-        with:
-          draft: false
-          prerelease: false
-          generate_release_notes: true
-
   build-release:
     name: Build Release - ${{ matrix.platform.release_for }}
-    needs: create-release
     strategy:
       matrix:
         platform:
