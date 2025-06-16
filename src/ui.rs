@@ -133,7 +133,6 @@ fn render_input_section<'a>(game: &crate::game::GameState, input_buffer: &'a str
         }
         GamePhase::LandTransaction => {
             let max_buy = if game.land_price > 0 { game.grain / game.land_price } else { 0 };
-            content.push(Line::from(""));
             content.push(Line::from(vec![
                 Span::raw("LAND IS TRADING AT "),
                 Span::styled(
@@ -311,14 +310,13 @@ fn render_instruction(frame: &mut Frame, area: Rect, number: &str, lines: Vec<&s
 }
 
 fn draw_splash(frame: &mut Frame, area: Rect) {
-    // Create layout for the splash screen
+    // Create layout for the content
     let chunks = Layout::default()
         .direction(Direction::Vertical)
-        .margin(1)
+        .margin(2)
         .constraints([
             Constraint::Length(1),   // Top decoration
             Constraint::Length(3),   // Top text
-            Constraint::Length(1),   // Decoration
             Constraint::Length(8),   // Big title
             Constraint::Length(4),   // Subtitle
             Constraint::Length(1),   // Bottom decoration
@@ -343,13 +341,6 @@ fn draw_splash(frame: &mut Frame, area: Rect) {
         .wrap(ratatui::widgets::Wrap { trim: true });
     top_paragraph.render(chunks[1], frame.buffer_mut());
 
-    // Middle decoration
-    let wave_pattern = "~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~";
-    let mid_decoration_paragraph = Paragraph::new(wave_pattern)
-        .style(Style::default().fg(Color::DarkGray))
-        .alignment(Alignment::Center);
-    mid_decoration_paragraph.render(chunks[2], frame.buffer_mut());
-
     // Create the big text widget
     let big_text = BigText::builder()
         .pixel_size(PixelSize::Quadrant)
@@ -358,7 +349,7 @@ fn draw_splash(frame: &mut Frame, area: Rect) {
         .centered()
         .build();
 
-    big_text.render(chunks[3], frame.buffer_mut());
+    big_text.render(chunks[2], frame.buffer_mut());
 
     // Add subtitle with decorations
     let subtitle_lines = vec![
@@ -378,13 +369,13 @@ fn draw_splash(frame: &mut Frame, area: Rect) {
     
     let subtitle = Paragraph::new(subtitle_lines)
         .alignment(Alignment::Center);
-    subtitle.render(chunks[4], frame.buffer_mut());
+    subtitle.render(chunks[3], frame.buffer_mut());
 
     // Bottom decoration
     let bottom_decoration_paragraph = Paragraph::new(decoration_line)
         .style(Style::default().fg(Color::DarkGray))
         .alignment(Alignment::Center);
-    bottom_decoration_paragraph.render(chunks[5], frame.buffer_mut());
+    bottom_decoration_paragraph.render(chunks[4], frame.buffer_mut());
     
     // Instructions at bottom
     let instructions = vec![
@@ -402,5 +393,5 @@ fn draw_splash(frame: &mut Frame, area: Rect) {
     
     let instructions_paragraph = Paragraph::new(instructions)
         .alignment(Alignment::Center);
-    instructions_paragraph.render(chunks[7], frame.buffer_mut());
+    instructions_paragraph.render(chunks[6], frame.buffer_mut());
 }
