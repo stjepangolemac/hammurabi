@@ -61,7 +61,7 @@ pub fn draw(frame: &mut Frame, app: &App) {
     // Title and year
     content.push(Line::from(vec![
         Span::styled(
-            format!("HAMURABI: I BEG TO REPORT TO YOU, IN YEAR {}", app.game.year),
+            format!("HAMMURABI: I BEG TO REPORT TO THEE, IN YEAR {} OF THY REIGN", app.game.year),
             Style::default().fg(Color::White).add_modifier(Modifier::BOLD),
         ),
     ]));
@@ -142,10 +142,10 @@ fn render_input_section<'a>(game: &crate::game::GameState, input_buffer: &'a str
                 Span::raw(" BUSHELS PER ACRE."),
             ]));
             content.push(Line::from(""));
-            content.push(Line::from("HOW MANY ACRES DO YOU WISH TO BUY?"));
+            content.push(Line::from("HOW MANY ACRES DOST THOU WISH TO ACQUIRE?"));
             content.push(Line::from(vec![
                 Span::styled(
-                    format!("(NEGATIVE TO SELL, MAX BUY: {}, YOU OWN: {})", max_buy, game.land),
+                    format!("(NEGATIVE TO SELL, THOU CANST BUY: {}, THY HOLDINGS: {})", max_buy, game.land),
                     Style::default().fg(Color::DarkGray),
                 ),
             ]));
@@ -157,16 +157,16 @@ fn render_input_section<'a>(game: &crate::game::GameState, input_buffer: &'a str
             let _max_by_land = game.land;
             
             content.push(Line::from(""));
-            content.push(Line::from("HOW MANY ACRES DO YOU WISH TO PLANT WITH SEED?"));
+            content.push(Line::from("HOW MANY ACRES WILT THOU PLANT WITH SEED?"));
             content.push(Line::from(vec![
                 Span::styled(
-                    format!("(MAX: {} - LIMITED BY ", max_plant),
+                    format!("(THY LIMIT: {} - CONSTRAINED BY ", max_plant),
                     Style::default().fg(Color::DarkGray),
                 ),
                 Span::styled(
-                    if max_plant == max_by_pop { "WORKERS" }
-                    else if max_plant == max_by_grain { "GRAIN" }
-                    else { "LAND" },
+                    if max_plant == max_by_pop { "THY WORKERS" }
+                    else if max_plant == max_by_grain { "THY GRAIN" }
+                    else { "THY LAND" },
                     Style::default().fg(Color::Yellow),
                 ),
                 Span::styled(")", Style::default().fg(Color::DarkGray)),
@@ -176,11 +176,11 @@ fn render_input_section<'a>(game: &crate::game::GameState, input_buffer: &'a str
             let need = game.grain_needed_for_feeding();
             content.push(Line::from(""));
             content.push(Line::from(vec![
-                Span::raw("HOW MANY BUSHELS DO YOU WISH TO FEED YOUR PEOPLE?"),
+                Span::raw("HOW MANY BUSHELS SHALL FEED THY PEOPLE?"),
             ]));
             content.push(Line::from(vec![
                 Span::styled(
-                    format!("(NEED: {} FOR ALL, HAVE: {})", need, game.grain),
+                    format!("(THY PEOPLE REQUIRE: {}, THY STORES HOLD: {})", need, game.grain),
                     Style::default().fg(Color::DarkGray),
                 ),
             ]));
@@ -189,7 +189,7 @@ fn render_input_section<'a>(game: &crate::game::GameState, input_buffer: &'a str
             content.push(Line::from(""));
             content.push(Line::from(vec![
                 Span::styled(
-                    "PRESS ENTER TO CONTINUE...",
+                    "PRESS ENTER TO CONTINUE THY REIGN...",
                     Style::default().fg(Color::DarkGray).add_modifier(Modifier::ITALIC),
                 ),
             ]));
@@ -198,7 +198,7 @@ fn render_input_section<'a>(game: &crate::game::GameState, input_buffer: &'a str
             content.push(Line::from(""));
             content.push(Line::from(vec![
                 Span::styled(
-                    "PRESS ESC TO EXIT",
+                    "PRESS ESC TO DEPART THIS MORTAL REALM",
                     Style::default().fg(Color::DarkGray).add_modifier(Modifier::ITALIC),
                 ),
             ]));
@@ -313,41 +313,68 @@ fn render_instruction(frame: &mut Frame, area: Rect, number: &str, lines: Vec<&s
 }
 
 fn draw_splash(frame: &mut Frame, area: Rect) {
-    // Create layout for centering the big text
+    // Create layout for the splash screen
     let chunks = Layout::default()
         .direction(Direction::Vertical)
-        .margin(0)
+        .margin(1)
         .constraints([
-            Constraint::Percentage(40),
-            Constraint::Min(8),
-            Constraint::Percentage(40),
+            Constraint::Length(4),   // Top text
+            Constraint::Length(2),   // Spacer
+            Constraint::Length(8),   // Big title
+            Constraint::Length(3),   // Subtitle
+            Constraint::Min(0),      // Spacer
+            Constraint::Length(3),   // Instructions
         ])
         .split(area);
+
+    // Top descriptive text
+    let top_text = "IN THIS GAME YOU CAN DIRECT THE ADMINISTRATOR OF THE ANCIENT CITY OF SUMERIA, HAMMURABI. HOW LONG CAN YOU MANAGE YOUR CITY, BECAUSE YOU ARE...";
+    
+    let top_paragraph = Paragraph::new(top_text)
+        .style(Style::default().fg(Color::White))
+        .alignment(Alignment::Center)
+        .wrap(ratatui::widgets::Wrap { trim: true });
+    top_paragraph.render(chunks[0], frame.buffer_mut());
 
     // Create the big text widget
     let big_text = BigText::builder()
         .pixel_size(PixelSize::Quadrant)
-        .style(Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD))
+        .style(Style::default().fg(Color::LightRed).add_modifier(Modifier::BOLD))
         .lines(vec!["HAMMURABI".into()])
         .centered()
         .build();
 
-    big_text.render(chunks[1], frame.buffer_mut());
+    big_text.render(chunks[2], frame.buffer_mut());
 
-    // Add a subtitle below
-    let subtitle = Paragraph::new("Ancient Kingdom Management Simulator")
-        .style(Style::default().fg(Color::DarkGray).add_modifier(Modifier::ITALIC))
-        .alignment(Alignment::Center);
+    // Add subtitle
+    let subtitle_lines = vec![
+        Line::from(vec![
+            Span::styled("KING OF", Style::default().fg(Color::Magenta).add_modifier(Modifier::BOLD)),
+        ]),
+        Line::from(vec![
+            Span::styled("ANCIENT BABYLONIA", Style::default().fg(Color::Magenta).add_modifier(Modifier::BOLD)),
+        ]),
+    ];
     
-    let subtitle_area = Layout::default()
-        .direction(Direction::Vertical)
-        .margin(0)
-        .constraints([
-            Constraint::Length(2),
-            Constraint::Length(1),
-            Constraint::Min(0),
-        ])
-        .split(chunks[2])[1];
-        
-    subtitle.render(subtitle_area, frame.buffer_mut());
+    let subtitle = Paragraph::new(subtitle_lines)
+        .alignment(Alignment::Center);
+    subtitle.render(chunks[3], frame.buffer_mut());
+    
+    // Instructions at bottom
+    let instructions = vec![
+        Line::from(vec![
+            Span::raw("PRESS "),
+            Span::styled("<ENTER>", Style::default().fg(Color::Yellow)),
+            Span::raw(" TO BEGIN THE GAME"),
+        ]),
+        Line::from(vec![
+            Span::raw("PRESS "),
+            Span::styled("<ESC>", Style::default().fg(Color::Yellow)),
+            Span::raw(" TO QUIT"),
+        ]),
+    ];
+    
+    let instructions_paragraph = Paragraph::new(instructions)
+        .alignment(Alignment::Center);
+    instructions_paragraph.render(chunks[5], frame.buffer_mut());
 }

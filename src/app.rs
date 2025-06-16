@@ -100,10 +100,10 @@ impl App {
                     self.message.clear();
                 }
                 ActionResult::InsufficientGrain => {
-                    self.message = "Not enough grain to buy that much land!".to_string();
+                    self.message = "Thy coffers lack the grain for such purchase!".to_string();
                 }
                 ActionResult::InsufficientLand => {
-                    self.message = "You don't have that much land to sell!".to_string();
+                    self.message = "Thou dost not possess such vast estates!".to_string();
                 }
                 _ => {}
             }
@@ -121,13 +121,13 @@ impl App {
                     self.message.clear();
                 }
                 ActionResult::InsufficientGrain => {
-                    self.message = "Not enough grain for seed!".to_string();
+                    self.message = "Thy granaries hold not enough seed!".to_string();
                 }
                 ActionResult::InsufficientLand => {
-                    self.message = "You don't have that much land!".to_string();
+                    self.message = "Thy kingdom encompasses not such acreage!".to_string();
                 }
                 ActionResult::InsufficientPopulation => {
-                    self.message = "Not enough people to work the fields!".to_string();
+                    self.message = "Too few subjects remain to till such fields!".to_string();
                 }
                 _ => {}
             }
@@ -143,7 +143,7 @@ impl App {
                     self.message.clear();
                 }
                 ActionResult::InsufficientGrain => {
-                    self.message = "You don't have that much grain!".to_string();
+                    self.message = "Thy stores contain not such abundance!".to_string();
                 }
                 _ => {}
             }
@@ -157,7 +157,7 @@ impl App {
         
         // Add starvation report first if any
         if self.game.deaths_starvation > 0 {
-            self.event_messages.push(format!("YOU STARVED {} PEOPLE", self.game.deaths_starvation));
+            self.event_messages.push(format!("{} OF THY SUBJECTS STARVED TO DEATH", self.game.deaths_starvation));
         }
         
         for outcome in outcomes {
@@ -193,15 +193,15 @@ impl App {
         
         if self.game.deaths_starvation > 0 && 
            self.game.deaths_starvation * 100 / (self.game.population + self.game.deaths_starvation) > 45 {
-            self.event_messages.push("YOU STARVED OVER 45% OF THE POPULATION IN ONE YEAR!".to_string());
-            self.event_messages.push("DUE TO THIS EXTREME MISMANAGEMENT YOU HAVE NOT ONLY".to_string());
-            self.event_messages.push("BEEN IMPEACHED AND THROWN OUT OF OFFICE BUT YOU HAVE".to_string());
-            self.event_messages.push("ALSO BEEN DECLARED NATIONAL FINK!!!!".to_string());
+            self.event_messages.push("THOU HAST STARVED MORE THAN HALF THY SUBJECTS IN A SINGLE YEAR!".to_string());
+            self.event_messages.push("FOR THIS MOST GRIEVOUS SIN, THOU ART NOT ONLY".to_string());
+            self.event_messages.push("CAST FROM THY THRONE, BUT SHALL BE REMEMBERED".to_string());
+            self.event_messages.push("AS THE GREATEST FOOL TO EVER WEAR A CROWN!!!!".to_string());
         } else {
-            self.event_messages.push("IN YOUR 10-YEAR TERM OF OFFICE:".to_string());
-            self.event_messages.push(format!("{:.1} PERCENT OF THE POPULATION STARVED PER YEAR ON AVERAGE", score.death_rate / 10.0));
-            self.event_messages.push(format!("A TOTAL OF {} PEOPLE DIED!!", score.total_deaths));
-            self.event_messages.push(format!("YOU STARTED WITH 10 ACRES PER PERSON AND ENDED WITH {:.1}", score.acres_per_person));
+            self.event_messages.push("IN THY TEN-YEAR REIGN OVER BABYLON:".to_string());
+            self.event_messages.push(format!("{:.1} PERCENT OF THY SUBJECTS STARVED EACH YEAR", score.death_rate / 10.0));
+            self.event_messages.push(format!("A TOTAL OF {} SOULS PERISHED UNDER THY RULE!", score.total_deaths));
+            self.event_messages.push(format!("THOU BEGAN WITH 10 ACRES PER SUBJECT AND ENDED WITH {:.1}", score.acres_per_person));
             self.event_messages.push("".to_string());
             self.event_messages.push(score.get_rating_message().to_string());
         }

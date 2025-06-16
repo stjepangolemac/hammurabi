@@ -55,13 +55,13 @@ impl Score {
     pub fn get_rating_message(&self) -> &'static str {
         match self.rating {
             PerformanceRating::Terrible => {
-                "YOUR HEAVY-HANDED PERFORMANCE SMACKS OF NERO AND IVAN IV. THE PEOPLE (REMAINING) FIND YOU AN UNPLEASANT RULER, AND, FRANKLY, HATE YOUR GUTS!!"
+                "THY HEAVY-HANDED RULE DOTH RIVAL NERO AND IVAN THE TERRIBLE! THY SURVIVING SUBJECTS FIND THEE A MOST VILE DESPOT AND PRAY FOR THY SWIFT DEMISE!"
             }
             PerformanceRating::Poor => {
-                "YOUR PERFORMANCE COULD HAVE BEEN SOMEWHAT BETTER, BUT REALLY WASN'T TOO BAD AT ALL. THE PEOPLE APPRECIATE THAT."
+                "THY REIGN WAS MEDIOCRE AT BEST. THOUGH THY SUBJECTS SURVIVED, THEY SHALL NOT SING SONGS OF THY GLORY."
             }
             PerformanceRating::Fair | PerformanceRating::Good | PerformanceRating::Excellent => {
-                "A FANTASTIC PERFORMANCE!!! CHARLEMAGNE, DISRAELI, AND JEFFERSON COMBINED COULD NOT HAVE DONE BETTER!"
+                "A MOST WONDROUS PERFORMANCE!!! CHARLEMAGNE, DISRAELI, AND JEFFERSON COMBINED COULD NOT HAVE RULED WITH GREATER WISDOM!"
             }
         }
     }

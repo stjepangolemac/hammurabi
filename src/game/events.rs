@@ -51,7 +51,7 @@ impl GameState {
         EventOutcome {
             event: RandomEvent::Harvest,
             description: format!(
-                "YOU HARVESTED {} BUSHELS PER ACRE, TOTAL: {} BUSHELS",
+                "THY HARVEST YIELDED {} BUSHELS PER ACRE, TOTAL: {} BUSHELS",
                 self.harvest_yield, self.grain_harvested
             ),
             impact: self.grain_harvested as i32,
@@ -66,7 +66,7 @@ impl GameState {
         EventOutcome {
             event: RandomEvent::Rats,
             description: format!(
-                "RATS ATE {} BUSHELS",
+                "RATS INFERNAL DEVOURED {} BUSHELS OF THY GRAIN!",
                 self.grain_eaten_by_rats
             ),
             impact: -(self.grain_eaten_by_rats as i32),
@@ -81,7 +81,7 @@ impl GameState {
 
         EventOutcome {
             event: RandomEvent::Plague,
-            description: format!("A HORRIBLE PLAGUE STRUCK! HALF THE PEOPLE DIED"),
+            description: format!("A GREAT PESTILENCE HATH SWEPT THY KINGDOM! HALF THY SUBJECTS PERISHED!"),
             impact: -(deaths as i32),
         }
     }
@@ -91,7 +91,7 @@ impl GameState {
             self.new_citizens = 0;
             return EventOutcome {
                 event: RandomEvent::Immigration,
-                description: "NO ONE CAME TO THE CITY".to_string(),
+                description: "NO SOULS DARE ENTER THY STARVING KINGDOM".to_string(),
                 impact: 0,
             };
         }
@@ -102,7 +102,7 @@ impl GameState {
 
         EventOutcome {
             event: RandomEvent::Immigration,
-            description: format!("{} CAME TO THE CITY", self.new_citizens),
+            description: format!("{} SOULS CAME TO DWELL IN THY KINGDOM", self.new_citizens),
             impact: self.new_citizens as i32,
         }
     }
