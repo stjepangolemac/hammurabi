@@ -177,8 +177,8 @@ impl App {
             );
         }
 
-        for outcome in outcomes {
-            self.event_messages.push(outcome.description);
+        for message in outcomes {
+            self.event_messages.push(message);
         }
 
         // Save year summary

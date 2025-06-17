@@ -1,10 +1,8 @@
 #[derive(Debug, Clone)]
-#[allow(dead_code)]
 pub struct Score {
     pub total_deaths: u32,
     pub death_rate: f32,
     pub acres_per_person: f32,
-    pub population_growth: i32,
     pub rating: PerformanceRating,
 }
 
@@ -29,7 +27,6 @@ pub fn evaluate_performance(
     } else {
         0.0
     };
-    let population_growth = final_population as i32 - initial_population as i32;
 
     let rating = if death_rate > 33.0 || acres_per_person < 7.0 {
         PerformanceRating::Terrible
@@ -47,7 +44,6 @@ pub fn evaluate_performance(
         total_deaths,
         death_rate,
         acres_per_person,
-        population_growth,
         rating,
     }
 }

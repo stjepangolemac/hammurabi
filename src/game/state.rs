@@ -17,7 +17,6 @@ pub struct GameState {
     pub grain_harvested: u32,
     pub acres_planted: u32,
     pub rng: StdRng,
-    pub history: Vec<YearSummary>,
     pub current_phase: GamePhase,
 }
 
@@ -30,20 +29,6 @@ pub enum GamePhase {
     Feeding,
     YearEnd,
     GameOver,
-}
-
-#[derive(Debug, Clone)]
-#[allow(dead_code)]
-pub struct YearSummary {
-    pub year: u32,
-    pub population: u32,
-    pub grain: u32,
-    pub land: u32,
-    pub starved: u32,
-    pub new_citizens: u32,
-    pub plague_deaths: u32,
-    pub harvest_yield: u32,
-    pub rats_damage: u32,
 }
 
 impl GameState {
@@ -70,7 +55,6 @@ impl GameState {
             grain_harvested: 0,
             acres_planted: 0,
             rng,
-            history: Vec::new(),
             current_phase: GamePhase::Splash,
         }
     }
@@ -121,17 +105,6 @@ impl GameState {
     }
 
     pub fn save_year_summary(&mut self) {
-        let summary = YearSummary {
-            year: self.year,
-            population: self.population,
-            grain: self.grain,
-            land: self.land,
-            starved: self.deaths_starvation,
-            new_citizens: self.new_citizens,
-            plague_deaths: self.deaths_plague,
-            harvest_yield: self.harvest_yield,
-            rats_damage: self.grain_eaten_by_rats,
-        };
-        self.history.push(summary);
+        // This method is kept for compatibility but no longer stores history
     }
 }
