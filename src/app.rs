@@ -14,9 +14,9 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(seed: Option<u64>) -> Self {
+    pub fn new(seed: Option<u64>, unlimited: bool) -> Self {
         Self {
-            game: GameState::new(seed),
+            game: GameState::new(seed, unlimited),
             input_buffer: String::new(),
             message: String::new(),
             event_messages: Vec::new(),
@@ -223,11 +223,18 @@ impl App {
             self.event_messages
                 .push("AS THE GREATEST FOOL TO EVER WEAR A CROWN!!!!".to_string());
         } else {
-            self.event_messages
-                .push("IN THY TEN-YEAR REIGN OVER BABYLON:".to_string());
+            if self.game.unlimited_mode {
+                self.event_messages.push(format!(
+                    "IN THY {}-YEAR REIGN OVER BABYLON:",
+                    self.game.year - 1
+                ));
+            } else {
+                self.event_messages
+                    .push("IN THY TEN-YEAR REIGN OVER BABYLON:".to_string());
+            }
             self.event_messages.push(format!(
                 "{:.1} PERCENT OF THY SUBJECTS STARVED EACH YEAR",
-                score.death_rate / 10.0
+                score.death_rate / (self.game.year - 1) as f32
             ));
             self.event_messages.push(format!(
                 "A TOTAL OF {} SOULS PERISHED UNDER THY RULE!",

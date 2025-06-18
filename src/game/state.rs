@@ -18,6 +18,7 @@ pub struct GameState {
     pub acres_planted: u32,
     pub rng: StdRng,
     pub current_phase: GamePhase,
+    pub unlimited_mode: bool,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -32,7 +33,7 @@ pub enum GamePhase {
 }
 
 impl GameState {
-    pub fn new(seed: Option<u64>) -> Self {
+    pub fn new(seed: Option<u64>, unlimited: bool) -> Self {
         let mut rng = match seed {
             Some(s) => StdRng::seed_from_u64(s),
             None => StdRng::from_entropy(),
@@ -56,6 +57,7 @@ impl GameState {
             acres_planted: 0,
             rng,
             current_phase: GamePhase::Splash,
+            unlimited_mode: unlimited,
         }
     }
 
@@ -87,7 +89,7 @@ impl GameState {
     }
 
     pub fn is_game_over(&self) -> bool {
-        if self.year > 10 {
+        if !self.unlimited_mode && self.year > 10 {
             return true;
         }
 

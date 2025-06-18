@@ -23,6 +23,10 @@ struct Cli {
     /// Random seed for deterministic gameplay
     #[arg(short, long)]
     seed: Option<u64>,
+
+    /// Play in unlimited time mode (no 10-year limit)
+    #[arg(short, long)]
+    unlimited: bool,
 }
 
 fn main() -> Result<()> {
@@ -36,7 +40,7 @@ fn main() -> Result<()> {
     let mut terminal = Terminal::new(backend)?;
 
     // Create app and run
-    let app = App::new(cli.seed);
+    let app = App::new(cli.seed, cli.unlimited);
     let res = run_app(&mut terminal, app);
 
     // Restore terminal

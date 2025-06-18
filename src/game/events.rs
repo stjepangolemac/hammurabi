@@ -2,7 +2,6 @@ use crate::game::state::GameState;
 use crate::messages::MessageTemplates;
 use rand::Rng;
 
-
 impl GameState {
     pub fn process_year_events(&mut self, messages: &mut MessageTemplates) -> Vec<String> {
         let mut outcomes = Vec::new();
