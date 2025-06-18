@@ -1,6 +1,6 @@
 [package]
 name = "hammurabi"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = ["Stjepan Golemac <stjepan.golemac@gmail.com>"]
 description = "A modern terminal-based recreation of the classic 1968 Hammurabi game"
